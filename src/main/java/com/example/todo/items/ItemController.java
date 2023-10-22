@@ -19,24 +19,24 @@ public class ItemController {
 
     private final ItemRepository itemRepository;
 
-    public ItemController(ItemRepository itemRepository) {
+    private final ItemMapper itemMapper;
+
+    public ItemController(ItemRepository itemRepository, ItemMapper itemMapper) {
         this.itemRepository = itemRepository;
+        this.itemMapper = itemMapper;
     }
 
     @PostMapping
     public  ResponseEntity<ItemDetailsDto> create(@Valid @RequestBody final ItemCreateDto item){
-        ItemEntity itemEntity = new ItemEntity();
-        itemEntity.setDescription(item.getDescription());
-        itemEntity.setDueDateTime(item.getDueDateTime());
-        ItemEntity saved = this.itemRepository.save(itemEntity);
+        ItemEntity saved = this.itemRepository.save(this.itemMapper.map(item));
 
-        return ResponseEntity.status(201).body(new ItemDetailsDto(saved.getId(), saved.getDescription(), saved.getDueDateTime()));
+        return ResponseEntity.status(201).body(this.itemMapper.map(saved));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ItemDetailsDto> getDetails(@PathVariable UUID id){
         Optional<ItemEntity> itemEntity = this.itemRepository.findById(id);
-        return itemEntity.map(entity -> ResponseEntity.ok(new ItemDetailsDto(entity.getId(), entity.getDescription(), entity.getDueDateTime()))).orElseGet(() -> ResponseEntity.notFound().build());
+        return itemEntity.map(entity -> ResponseEntity.ok(this.itemMapper.map(entity))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
 }
