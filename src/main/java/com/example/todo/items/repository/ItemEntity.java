@@ -1,4 +1,4 @@
-package com.example.todo.items;
+package com.example.todo.items.repository;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -24,4 +24,5 @@ public class ItemEntity {
 
     private OffsetDateTime created;
 
+    private Status status = Status.NOT_DONE;
 }

@@ -1,4 +1,4 @@
-package com.example.todo.items;
+package com.example.todo.items.controller;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

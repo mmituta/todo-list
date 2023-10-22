@@ -1,4 +1,4 @@
-package com.example.todo.items;
+package com.example.todo.items.repository;
 
 import jakarta.persistence.PrePersist;
 import org.springframework.stereotype.Component;

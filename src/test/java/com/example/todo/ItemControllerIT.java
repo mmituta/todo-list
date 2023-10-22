@@ -1,8 +1,9 @@
 package com.example.todo;
 
 
-import com.example.todo.items.CurrentDateTimeProvider;
-import com.example.todo.items.ItemDetailsDto;
+import com.example.todo.items.controller.Status;
+import com.example.todo.items.repository.CurrentDateTimeProvider;
+import com.example.todo.items.controller.ItemDetailsDto;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,19 +37,18 @@ class ItemControllerIT {
     }
 
     @Test
-    void shouldCreateItem() throws JSONException {
-        JSONObject requestParams = new JSONObject();
-        requestParams.put("description", "test description");
-        requestParams.put("dueDateTime", FUTURE_DATE);
+    void shouldCreateItem() {
+        String body = newCreateItemBody("test description", FUTURE_DATE);
 
-        given().body(requestParams.toString()).contentType(MediaType.APPLICATION_JSON_VALUE)
+        given().body(body).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/items")
                 .then()
                 .statusCode(equalTo(201))
                 .body("id", notNullValue())
                 .body("description", equalTo("test description"))
                 .body("dueDateTime", equalTo(FUTURE_DATE))
-                .body("created", equalTo(NOW));
+                .body("created", equalTo(NOW))
+                .body("status", equalTo("NOT_DONE"));
     }
 
     @Test
@@ -95,7 +95,9 @@ class ItemControllerIT {
                 .body("id", equalTo(createdId))
                 .body("description", equalTo("detailed description"))
                 .body("dueDateTime", equalTo(FUTURE_DATE))
-                .body("created", equalTo(NOW));
+                .body("created", equalTo(NOW))
+                .body("status", equalTo("NOT_DONE"));
+
     }
 
     @Test
@@ -115,7 +117,7 @@ class ItemControllerIT {
     }
 
     private static ItemDetailsDto detailsDto(String id, String description, String dueDateTime, String created) {
-        return new ItemDetailsDto(UUID.fromString(id), description, OffsetDateTime.parse(dueDateTime), OffsetDateTime.parse(created));
+        return new ItemDetailsDto(UUID.fromString(id), description, OffsetDateTime.parse(dueDateTime), OffsetDateTime.parse(created), Status.NOT_DONE);
     }
 
     private String newCreateItemBody(String description, String dueDateTime) {

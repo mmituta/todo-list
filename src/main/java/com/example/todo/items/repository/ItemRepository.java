@@ -1,4 +1,4 @@
-package com.example.todo.items;
+package com.example.todo.items.repository;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

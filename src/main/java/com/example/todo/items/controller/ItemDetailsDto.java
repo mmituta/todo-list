@@ -1,4 +1,4 @@
-package com.example.todo.items;
+package com.example.todo.items.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,4 +13,5 @@ public class ItemDetailsDto {
     private String description;
     private OffsetDateTime dueDateTime;
     private OffsetDateTime created;
+    private Status status;
 }
