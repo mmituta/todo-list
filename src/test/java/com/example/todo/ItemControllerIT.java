@@ -102,7 +102,6 @@ class ItemControllerIT {
 
     @Test
     void shouldGetAllItems() {
-
         String firstId = given().body(newCreateItemBody("First", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/items")
                 .then().statusCode(equalTo(201)).extract().path("id");
@@ -114,6 +113,21 @@ class ItemControllerIT {
 
         ItemDetailsDto[] allItems = when().get("/items").as(ItemDetailsDto[].class);
         assertThat(allItems).contains(detailsDto(firstId, "First", FUTURE_DATE, NOW), detailsDto(secondId, "Second", FUTURE_DATE, NOW));
+    }
+
+    @Test
+    void shouldMarkItemAsDone(){
+        String id = given().body(newCreateItemBody("Description", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/items")
+                .then().statusCode(equalTo(201)).extract().path("id");
+
+        when().put("/items/{id}/done", id)
+                .then().statusCode(200)
+                .body("status", equalTo("DONE"));
+
+        when().get("/items/{id}", id)
+                .then().statusCode(200)
+                .body("status", equalTo("DONE"));
     }
 
     private static ItemDetailsDto detailsDto(String id, String description, String dueDateTime, String created) {

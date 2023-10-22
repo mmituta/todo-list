@@ -4,6 +4,7 @@ package com.example.todo.items.controller;
 import com.example.todo.items.repository.ItemEntity;
 import com.example.todo.items.ItemMapper;
 import com.example.todo.items.repository.ItemRepository;
+import com.example.todo.items.repository.Status;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,20 +28,33 @@ public class ItemController {
     }
 
     @PostMapping
-    public  ResponseEntity<ItemDetailsDto> create(@Valid @RequestBody final ItemCreateDto item){
+    public ResponseEntity<ItemDetailsDto> create(@Valid @RequestBody final ItemCreateDto item) {
         ItemEntity saved = this.itemRepository.save(this.itemMapper.map(item));
 
         return ResponseEntity.status(201).body(this.itemMapper.map(saved));
     }
+
     @GetMapping
-    public ResponseEntity<Collection<ItemDetailsDto>> getAllItems(){
+    public ResponseEntity<Collection<ItemDetailsDto>> getAllItems() {
         Iterable<ItemEntity> items = this.itemRepository.findAll();
-        return ResponseEntity.ok(StreamSupport.stream( items.spliterator(), false).map(this.itemMapper::map).toList());
+        return ResponseEntity.ok(StreamSupport.stream(items.spliterator(), false).map(this.itemMapper::map).toList());
     }
+
     @GetMapping("/{id}")
-    public ResponseEntity<ItemDetailsDto> getDetails(@PathVariable UUID id){
+    public ResponseEntity<ItemDetailsDto> getDetails(@PathVariable UUID id) {
         Optional<ItemEntity> itemEntity = this.itemRepository.findById(id);
         return itemEntity.map(entity -> ResponseEntity.ok(this.itemMapper.map(entity))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/{id}/done")
+    public ResponseEntity<ItemDetailsDto> markAsDone(@PathVariable UUID id) {
+        Optional<ItemEntity> itemEntity = this.itemRepository.findById(id);
+        if(itemEntity.isPresent()){
+            ItemEntity entity = itemEntity.get();
+            entity.setStatus(Status.DONE);
+            this.itemRepository.save(entity);
+            return ResponseEntity.ok(this.itemMapper.map(entity));
+        }
+        return ResponseEntity.notFound().build();
+    }
 }
