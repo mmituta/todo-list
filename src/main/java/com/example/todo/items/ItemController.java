@@ -1,8 +1,14 @@
 package com.example.todo.items;
 
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -18,7 +24,7 @@ public class ItemController {
     }
 
     @PostMapping
-    public  ResponseEntity<ItemDetailsDto> create(@RequestBody final ItemCreateDto item){
+    public  ResponseEntity<ItemDetailsDto> create(@Valid @RequestBody final ItemCreateDto item){
         ItemEntity itemEntity = new ItemEntity();
         itemEntity.setDescription(item.getDescription());
         itemEntity.setDueDateTime(item.getDueDateTime());

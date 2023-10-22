@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.notNullValue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ItemControllerIT {
+
 	private static final String DATE_IN_THE_FUTURE = "2023-10-22T15:35:30Z";
 
 	@Test
@@ -29,6 +30,41 @@ class ItemControllerIT {
 				.body("description", equalTo("test description"))
 				.body("dueDateTime", equalTo(DATE_IN_THE_FUTURE));
 	}
+
+	@Test
+	void shouldReturnBadRequestResponseWhenDueDateTimeIsMissingInCreateRequest() throws JSONException {
+		JSONObject requestParams = new JSONObject();
+		requestParams.put("description", "description");
+
+		given().body(requestParams.toString()).contentType(MediaType.APPLICATION_JSON_VALUE)
+				.when().post("/items")
+				.then()
+				.statusCode(equalTo(400));
+	}
+
+	@Test
+	void shouldReturnBadRequestResponseWhenDescriptionIsMissingInCreateRequest() throws JSONException {
+		JSONObject requestParams = new JSONObject();
+		requestParams.put("dueDateTime", DATE_IN_THE_FUTURE);
+
+		given().body(requestParams.toString()).contentType(MediaType.APPLICATION_JSON_VALUE)
+				.when().post("/items")
+				.then()
+				.statusCode(equalTo(400));
+	}
+
+	@Test
+	void shouldReturnBadRequestResponseWhenDescriptionIsBlankInCreateRequest() throws JSONException {
+		JSONObject requestParams = new JSONObject();
+		requestParams.put("dueDateTime", DATE_IN_THE_FUTURE);
+		requestParams.put("description", "  ");
+
+		given().body(requestParams.toString()).contentType(MediaType.APPLICATION_JSON_VALUE)
+				.when().post("/items")
+				.then()
+				.statusCode(equalTo(400));
+	}
+
 	@Test
 	void shouldCreateAndGetDetailsOfItem() throws JSONException {
 		JSONObject requestParams = new JSONObject();
