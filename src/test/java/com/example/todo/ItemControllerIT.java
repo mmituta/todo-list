@@ -28,7 +28,8 @@ class ItemControllerIT {
 				.statusCode(equalTo(201))
 				.body("id", notNullValue())
 				.body("description", equalTo("test description"))
-				.body("dueDateTime", equalTo(DATE_IN_THE_FUTURE));
+				.body("dueDateTime", equalTo(DATE_IN_THE_FUTURE))
+				.body("created", notNullValue());
 	}
 
 	@Test
@@ -80,6 +81,7 @@ class ItemControllerIT {
 				.statusCode(200)
 				.body("id", equalTo(createdId))
 				.body("description", equalTo("detailed description"))
-				.body("dueDateTime", equalTo(DATE_IN_THE_FUTURE));
+				.body("dueDateTime", equalTo(DATE_IN_THE_FUTURE))
+				.body("created", notNullValue());
 	}
 }

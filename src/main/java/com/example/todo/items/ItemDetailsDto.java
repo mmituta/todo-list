@@ -12,4 +12,5 @@ public class ItemDetailsDto {
     private UUID id;
     private String description;
     private OffsetDateTime dueDateTime;
+    private OffsetDateTime created;
 }
