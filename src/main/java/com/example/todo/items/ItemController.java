@@ -2,10 +2,10 @@ package com.example.todo.items;
 
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("items")
@@ -26,5 +26,10 @@ public class ItemController {
         return ResponseEntity.status(201).body(new ItemDetailsDto(saved.getId(), saved.getDescription()));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ItemDetailsDto> getDetails(@PathVariable UUID id){
+        Optional<ItemEntity> itemEntity = this.itemRepository.findById(id);
+        return itemEntity.map(entity -> ResponseEntity.ok(new ItemDetailsDto(entity.getId(), entity.getDescription()))).orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
 }
