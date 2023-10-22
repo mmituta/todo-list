@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("items")
@@ -32,7 +34,11 @@ public class ItemController {
 
         return ResponseEntity.status(201).body(this.itemMapper.map(saved));
     }
-
+    @GetMapping
+    public ResponseEntity<Collection<ItemDetailsDto>> getAllItems(){
+        Iterable<ItemEntity> items = this.itemRepository.findAll();
+        return ResponseEntity.ok(StreamSupport.stream( items.spliterator(), false).map(this.itemMapper::map).toList());
+    }
     @GetMapping("/{id}")
     public ResponseEntity<ItemDetailsDto> getDetails(@PathVariable UUID id){
         Optional<ItemEntity> itemEntity = this.itemRepository.findById(id);

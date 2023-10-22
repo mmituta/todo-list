@@ -12,6 +12,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
+@EntityListeners(ItemCreatedDateEntityListener.class)
 public class ItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -23,8 +24,4 @@ public class ItemEntity {
 
     private OffsetDateTime created;
 
-    @PrePersist
-    void onCreate(){
-        this.created = OffsetDateTime.now();
-    }
 }
