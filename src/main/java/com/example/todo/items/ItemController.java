@@ -21,15 +21,16 @@ public class ItemController {
     public  ResponseEntity<ItemDetailsDto> create(@RequestBody final ItemCreateDto item){
         ItemEntity itemEntity = new ItemEntity();
         itemEntity.setDescription(item.getDescription());
+        itemEntity.setDueDateTime(item.getDueDateTime());
         ItemEntity saved = this.itemRepository.save(itemEntity);
 
-        return ResponseEntity.status(201).body(new ItemDetailsDto(saved.getId(), saved.getDescription()));
+        return ResponseEntity.status(201).body(new ItemDetailsDto(saved.getId(), saved.getDescription(), saved.getDueDateTime()));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ItemDetailsDto> getDetails(@PathVariable UUID id){
         Optional<ItemEntity> itemEntity = this.itemRepository.findById(id);
-        return itemEntity.map(entity -> ResponseEntity.ok(new ItemDetailsDto(entity.getId(), entity.getDescription()))).orElseGet(() -> ResponseEntity.notFound().build());
+        return itemEntity.map(entity -> ResponseEntity.ok(new ItemDetailsDto(entity.getId(), entity.getDescription(), entity.getDueDateTime()))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
 }

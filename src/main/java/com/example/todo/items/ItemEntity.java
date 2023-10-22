@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
@@ -21,4 +22,5 @@ public class ItemEntity {
 
     private String description;
 
+    private OffsetDateTime dueDateTime;
 }

@@ -13,23 +13,27 @@ import static org.hamcrest.Matchers.notNullValue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ItemControllerIT {
+	private static final String DATE_IN_THE_FUTURE = "2023-10-22T15:35:30Z";
 
 	@Test
 	void shouldCreateItem() throws JSONException {
 		JSONObject requestParams = new JSONObject();
 		requestParams.put("description", "test description");
+		requestParams.put("dueDateTime", DATE_IN_THE_FUTURE);
 
 		given().body(requestParams.toString()).contentType(MediaType.APPLICATION_JSON_VALUE)
 				.when().post("/items")
 				.then()
 				.statusCode(equalTo(201))
 				.body("id", notNullValue())
-				.body("description", equalTo("test description"));
+				.body("description", equalTo("test description"))
+				.body("dueDateTime", equalTo(DATE_IN_THE_FUTURE));
 	}
 	@Test
 	void shouldCreateAndGetDetailsOfItem() throws JSONException {
 		JSONObject requestParams = new JSONObject();
 		requestParams.put("description", "detailed description");
+		requestParams.put("dueDateTime", DATE_IN_THE_FUTURE);
 
 		String createdId = given().body(requestParams.toString()).contentType(MediaType.APPLICATION_JSON_VALUE)
 				.when().post("/items")
@@ -39,6 +43,7 @@ class ItemControllerIT {
 				.then()
 				.statusCode(200)
 				.body("id", equalTo(createdId))
-				.body("description", equalTo("detailed description"));
+				.body("description", equalTo("detailed description"))
+				.body("dueDateTime", equalTo(DATE_IN_THE_FUTURE));
 	}
 }
