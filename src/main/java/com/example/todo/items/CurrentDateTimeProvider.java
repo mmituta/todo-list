@@ -1,4 +1,4 @@
-package com.example.todo.items.repository;
+package com.example.todo.items;
 
 import org.springframework.stereotype.Component;
 

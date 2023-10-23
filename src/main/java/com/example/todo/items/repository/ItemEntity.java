@@ -24,6 +24,8 @@ public class ItemEntity {
 
     private OffsetDateTime created;
 
+    private OffsetDateTime finished;
+
     private Status status = Status.NOT_DONE;
 
 

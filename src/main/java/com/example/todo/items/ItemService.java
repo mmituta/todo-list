@@ -14,9 +14,11 @@ import java.util.UUID;
 public class ItemService {
 
     private final ItemRepository itemRepository;
+    private final CurrentDateTimeProvider currentDateTimeProvider;
 
-    public ItemService(ItemRepository itemRepository) {
+    public ItemService(ItemRepository itemRepository, CurrentDateTimeProvider currentDateTimeProvider) {
         this.itemRepository = itemRepository;
+        this.currentDateTimeProvider = currentDateTimeProvider;
     }
 
     public ItemEntity create(ItemEntity item){
@@ -37,6 +39,7 @@ public class ItemService {
             }
             if (status != null) {
                 entity.setStatus(status);
+                entity.setFinished(status == Status.DONE ? this.currentDateTimeProvider.now(): null);
             }
             return Optional.of(entity);
 
