@@ -1,9 +1,9 @@
 package com.example.todo;
 
 
-import com.example.todo.items.controller.Status;
+import com.example.todo.items.controller.dto.StatusDto;
 import com.example.todo.items.repository.CurrentDateTimeProvider;
-import com.example.todo.items.controller.ItemDetailsDto;
+import com.example.todo.items.controller.dto.ItemDetailsDto;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +26,10 @@ import static org.hamcrest.Matchers.notNullValue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class ItemControllerIT {
 
+    private static final String DESCRIPTION = "description";
+    public static final String DUE_DATE_TIME = "dueDateTime";
+    public static final String STATUS = "status";
+    public static final String ID = "id";
     @MockBean
     private CurrentDateTimeProvider currentDateTimeProvider;
     private static final String FUTURE_DATE = "2023-10-22T15:35:30Z";
@@ -45,10 +49,10 @@ class ItemControllerIT {
                 .then()
                 .statusCode(equalTo(201))
                 .body("id", notNullValue())
-                .body("description", equalTo("test description"))
-                .body("dueDateTime", equalTo(FUTURE_DATE))
+                .body(DESCRIPTION, equalTo("test description"))
+                .body(DUE_DATE_TIME, equalTo(FUTURE_DATE))
                 .body("created", equalTo(NOW))
-                .body("status", equalTo("NOT_DONE"));
+                .body(STATUS, equalTo("NOT_DONE"));
     }
 
     @Test
@@ -87,16 +91,16 @@ class ItemControllerIT {
         String body = newCreateItemBody("detailed description", FUTURE_DATE);
         String createdId = given().body(body).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/items")
-                .then().statusCode(equalTo(201)).extract().path("id");
+                .then().statusCode(equalTo(201)).extract().path(ID);
 
         when().get("/items/{id}", createdId)
                 .then()
                 .statusCode(200)
-                .body("id", equalTo(createdId))
-                .body("description", equalTo("detailed description"))
-                .body("dueDateTime", equalTo(FUTURE_DATE))
+                .body(ID, equalTo(createdId))
+                .body(DESCRIPTION, equalTo("detailed description"))
+                .body(DUE_DATE_TIME, equalTo(FUTURE_DATE))
                 .body("created", equalTo(NOW))
-                .body("status", equalTo("NOT_DONE"));
+                .body(STATUS, equalTo("NOT_DONE"));
 
     }
 
@@ -104,45 +108,131 @@ class ItemControllerIT {
     void shouldGetAllItems() {
         String firstId = given().body(newCreateItemBody("First", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/items")
-                .then().statusCode(equalTo(201)).extract().path("id");
+                .then().statusCode(equalTo(201)).extract().path(ID);
 
 
         String secondId = given().body(newCreateItemBody("Second", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/items")
-                .then().statusCode(equalTo(201)).extract().path("id");
+                .then().statusCode(equalTo(201)).extract().path(ID);
 
         ItemDetailsDto[] allItems = when().get("/items").as(ItemDetailsDto[].class);
         assertThat(allItems).contains(detailsDto(firstId, "First", FUTURE_DATE, NOW), detailsDto(secondId, "Second", FUTURE_DATE, NOW));
     }
 
     @Test
-    void shouldMarkItemAsDone(){
+    void shouldMarkItemAsDone() {
         String id = given().body(newCreateItemBody("Description", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/items")
-                .then().statusCode(equalTo(201)).extract().path("id");
+                .then().statusCode(equalTo(201)).extract().path(ID);
 
-        when().put("/items/{id}/done", id)
+        given().body(newUpdateStatusBody(StatusDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/items/{id}", id)
                 .then().statusCode(200)
-                .body("status", equalTo("DONE"));
+                .body(STATUS, equalTo("DONE"));
 
         when().get("/items/{id}", id)
                 .then().statusCode(200)
-                .body("status", equalTo("DONE"));
+                .body(STATUS, equalTo("DONE"));
+    }
+
+    @Test
+    void shouldMarkItemAsNotDone() {
+        String id = given().body(newCreateItemBody("Description", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/items")
+                .then().statusCode(equalTo(201)).extract().path(ID);
+
+        given().body(newUpdateStatusBody(StatusDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/items/{id}", id)
+                .then().statusCode(200)
+                .body(STATUS, equalTo("DONE"));
+
+        when().get("/items/{id}", id)
+                .then().statusCode(200)
+                .body(STATUS, equalTo("DONE"));
+
+        given().body(newUpdateStatusBody(StatusDto.NOT_DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/items/{id}", id)
+                .then().statusCode(200)
+                .body(STATUS, equalTo("NOT_DONE"));
+
+        when().get("/items/{id}", id)
+                .then().statusCode(200)
+                .body(STATUS, equalTo("NOT_DONE"));
+    }
+
+    @Test
+    void shouldUpdateDescription() {
+        String id = given().body(newCreateItemBody("Before", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/items")
+                .then().statusCode(equalTo(201)).extract().path(ID);
+
+        given().body(newUpdateDescriptionBody("After")).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/items/{id}", id)
+                .then().statusCode(200)
+                .body(DESCRIPTION, equalTo("After"));
+
+        when().get("/items/{id}", id)
+                .then().statusCode(200)
+                .body(DESCRIPTION, equalTo("After"));
+    }
+
+    @Test
+    void shouldUpdateDescriptionAndStatusAtTheSameTime() {
+        String id = given().body(newCreateItemBody("Before", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/items")
+                .then().statusCode(equalTo(201)).extract().path(ID);
+
+        given().body(newUpdateItemBody("After", StatusDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/items/{id}", id)
+                .then().statusCode(200)
+                .body(DESCRIPTION, equalTo("After update"))
+                .body(STATUS, equalTo("DONE"));
+
+        when().get("/items/{id}", id)
+                .then().statusCode(200)
+                .body(DESCRIPTION, equalTo("After"))
+                .body(STATUS, equalTo("DONE"));
     }
 
     private static ItemDetailsDto detailsDto(String id, String description, String dueDateTime, String created) {
-        return new ItemDetailsDto(UUID.fromString(id), description, OffsetDateTime.parse(dueDateTime), OffsetDateTime.parse(created), Status.NOT_DONE);
+        return new ItemDetailsDto(UUID.fromString(id), description, OffsetDateTime.parse(dueDateTime), OffsetDateTime.parse(created), StatusDto.NOT_DONE);
     }
+
+    private String newUpdateItemBody(String description, StatusDto status) {
+
+        JSONObject requestParams = new JSONObject();
+        try {
+            if (description != null) {
+                requestParams.put(DESCRIPTION, description);
+            }
+            if (status != null) {
+                requestParams.put(STATUS, status.toString());
+            }
+        } catch (JSONException exception) {
+            fail("Exception when constructing 'create item' request", exception);
+        }
+        return requestParams.toString();
+
+    }
+
+    private String newUpdateDescriptionBody(String description) {
+        return this.newUpdateItemBody(description, null);
+    }
+
+    private String newUpdateStatusBody(StatusDto status) {
+        return this.newUpdateItemBody(null, status);
+    }
+
 
     private String newCreateItemBody(String description, String dueDateTime) {
 
         JSONObject requestParams = new JSONObject();
         try {
             if (description != null) {
-                requestParams.put("description", description);
+                requestParams.put(DESCRIPTION, description);
             }
             if (dueDateTime != null) {
-                requestParams.put("dueDateTime", dueDateTime);
+                requestParams.put(DUE_DATE_TIME, dueDateTime);
             }
         } catch (JSONException exception) {
             fail("Exception when constructing 'create item' request", exception);

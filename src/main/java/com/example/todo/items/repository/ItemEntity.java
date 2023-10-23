@@ -1,9 +1,7 @@
 package com.example.todo.items.repository;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -12,6 +10,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 @EntityListeners(ItemCreatedDateEntityListener.class)
 public class ItemEntity {
     @Id
@@ -25,4 +25,6 @@ public class ItemEntity {
     private OffsetDateTime created;
 
     private Status status = Status.NOT_DONE;
+
+
 }
