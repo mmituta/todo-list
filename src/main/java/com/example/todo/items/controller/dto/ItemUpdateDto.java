@@ -8,6 +8,6 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class ItemUpdateDto {
-    private StatusDto status;
+    private StatusUpdateDto status;
     private String description;
 }

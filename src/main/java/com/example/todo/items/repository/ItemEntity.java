@@ -29,4 +29,7 @@ public class ItemEntity {
     private Status status = Status.NOT_DONE;
 
 
+    public boolean isPastDue(OffsetDateTime now) {
+        return !this.dueDateTime.isAfter(now);
+    }
 }

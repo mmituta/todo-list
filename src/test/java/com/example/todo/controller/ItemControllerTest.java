@@ -1,11 +1,12 @@
 package com.example.todo.controller;
 
-import com.example.todo.items.ItemMapper;
+import com.example.todo.items.controller.ItemMapper;
 import com.example.todo.items.ItemService;
 import com.example.todo.items.controller.ItemController;
 import com.example.todo.items.controller.dto.ItemDetailsDto;
 import com.example.todo.items.controller.dto.ItemUpdateDto;
 import com.example.todo.items.controller.dto.StatusDto;
+import com.example.todo.items.controller.dto.StatusUpdateDto;
 import com.example.todo.items.repository.ItemEntity;
 import com.example.todo.items.repository.Status;
 import org.junit.jupiter.api.Test;
@@ -61,10 +62,10 @@ import static org.mockito.Mockito.*;
 
         ItemDetailsDto doneDto = ItemDetailsDto.builder().status(StatusDto.DONE).build();
         when(this.itemMapper.map(doneItem)).thenReturn(doneDto);
-        when(this.itemMapper.map(StatusDto.DONE)).thenReturn(Status.DONE);
+        when(this.itemMapper.map(StatusUpdateDto.DONE)).thenReturn(Status.DONE);
         when(this.itemService.findWithStatus(Status.DONE)).thenReturn(singleton(doneItem));
 
-        ResponseEntity<Collection<ItemDetailsDto>> result = this.itemController.getAllItems(StatusDto.DONE);
+        ResponseEntity<Collection<ItemDetailsDto>> result = this.itemController.getAllItems(StatusUpdateDto.DONE);
 
         assertThat(result.getBody()).containsOnly(doneDto);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
@@ -72,8 +73,8 @@ import static org.mockito.Mockito.*;
 
     @Test
     void shouldUpdateItem(){
-        ItemUpdateDto updateDto = ItemUpdateDto.builder().description(DESCRIPTION).status(StatusDto.DONE).build();
-        when(this.itemMapper.map(StatusDto.DONE)).thenReturn(Status.DONE);
+        ItemUpdateDto updateDto = ItemUpdateDto.builder().description(DESCRIPTION).status(StatusUpdateDto.DONE).build();
+        when(this.itemMapper.map(StatusUpdateDto.DONE)).thenReturn(Status.DONE);
         ItemEntity updateEntity = new ItemEntity();
         when(this.itemService.update(ID, DESCRIPTION, Status.DONE)).thenReturn(Optional.of(updateEntity));
         ItemDetailsDto expectedDto = ItemDetailsDto.builder().id(ID).build();
@@ -88,8 +89,8 @@ import static org.mockito.Mockito.*;
 
     @Test
     void shouldReturnNotFoundResponseIfUpdatedItemDoesNotExist(){
-        ItemUpdateDto updateDto = ItemUpdateDto.builder().description(DESCRIPTION).status(StatusDto.DONE).build();
-        when(this.itemMapper.map(StatusDto.DONE)).thenReturn(Status.DONE);
+        ItemUpdateDto updateDto = ItemUpdateDto.builder().description(DESCRIPTION).status(StatusUpdateDto.DONE).build();
+        when(this.itemMapper.map(StatusUpdateDto.DONE)).thenReturn(Status.DONE);
         when(this.itemService.update(ID, DESCRIPTION, Status.DONE)).thenReturn(Optional.empty());
 
         ResponseEntity<ItemDetailsDto> result = this.itemController.updateItem(ID, updateDto);

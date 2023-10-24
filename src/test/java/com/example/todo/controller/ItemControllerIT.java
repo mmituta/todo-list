@@ -1,7 +1,7 @@
 package com.example.todo.controller;
 
 
-import com.example.todo.items.controller.dto.StatusDto;
+import com.example.todo.items.controller.dto.StatusUpdateDto;
 import com.example.todo.items.CurrentDateTimeProvider;
 import com.example.todo.items.controller.dto.ItemDetailsDto;
 import org.json.JSONException;
@@ -111,7 +111,7 @@ class ItemControllerIT {
                 .when().post("/items")
                 .then().statusCode(equalTo(201)).extract().path(ID);
 
-        given().body(newUpdateStatusBody(StatusDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+        given().body(newUpdateStatusBody(StatusUpdateDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().patch("/items/{id}", id)
                 .then().statusCode(200)
                 .body(STATUS, equalTo("DONE"));
@@ -127,7 +127,7 @@ class ItemControllerIT {
                 .when().post("/items")
                 .then().statusCode(equalTo(201)).extract().path(ID);
 
-        given().body(newUpdateStatusBody(StatusDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+        given().body(newUpdateStatusBody(StatusUpdateDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().patch("/items/{id}", id)
                 .then().statusCode(200)
                 .body(STATUS, equalTo("DONE"));
@@ -136,7 +136,7 @@ class ItemControllerIT {
                 .then().statusCode(200)
                 .body(STATUS, equalTo("DONE"));
 
-        given().body(newUpdateStatusBody(StatusDto.NOT_DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+        given().body(newUpdateStatusBody(StatusUpdateDto.NOT_DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().patch("/items/{id}", id)
                 .then().statusCode(200)
                 .body(STATUS, equalTo("NOT_DONE"));
@@ -168,7 +168,7 @@ class ItemControllerIT {
                 .when().post("/items")
                 .then().statusCode(equalTo(201)).extract().path(ID);
 
-        given().body(newUpdateItemBody("After", StatusDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+        given().body(newUpdateItemBody("After", StatusUpdateDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().patch("/items/{id}", id)
                 .then().statusCode(200)
                 .body(DESCRIPTION, equalTo("After"))
@@ -186,7 +186,7 @@ class ItemControllerIT {
                 .when().post("/items")
                 .then().statusCode(equalTo(201)).extract().path(ID);
 
-        given().body(newUpdateStatusBody(StatusDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+        given().body(newUpdateStatusBody(StatusUpdateDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().patch("/items/{id}", id)
                 .then().statusCode(200)
                 .body(STATUS, equalTo("DONE"))
@@ -204,14 +204,14 @@ class ItemControllerIT {
                 .when().post("/items")
                 .then().statusCode(equalTo(201)).extract().path(ID);
 
-        given().body(newUpdateStatusBody(StatusDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+        given().body(newUpdateStatusBody(StatusUpdateDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().patch("/items/{id}", id)
                 .then().statusCode(200)
                 .body(STATUS, equalTo("DONE"))
                 .body("finished", equalTo(NOW));
 
 
-        given().body(newUpdateStatusBody(StatusDto.NOT_DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+        given().body(newUpdateStatusBody(StatusUpdateDto.NOT_DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().patch("/items/{id}", id)
                 .then().statusCode(200)
                 .body(STATUS, equalTo("NOT_DONE"))
@@ -251,7 +251,7 @@ class ItemControllerIT {
                 .when().post("/items")
                 .then().statusCode(equalTo(201)).extract().path(ID);
 
-        given().body(newUpdateStatusBody(StatusDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+        given().body(newUpdateStatusBody(StatusUpdateDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().patch("/items/{id}", doneId)
                 .then().statusCode(200)
                 .body(STATUS, equalTo("DONE"))
@@ -275,7 +275,7 @@ class ItemControllerIT {
                 .then().statusCode(equalTo(201)).extract().path(ID);
 
 
-        ItemDetailsDto doneItem = given().body(newUpdateStatusBody(StatusDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+        ItemDetailsDto doneItem = given().body(newUpdateStatusBody(StatusUpdateDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().patch("/items/{id}", doneId).as(ItemDetailsDto.class);
 
         ItemDetailsDto[] doneItems = given().queryParam("status", "DONE").contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -291,7 +291,7 @@ class ItemControllerIT {
                 .then().statusCode(400);
     }
 
-    private String newUpdateItemBody(String description, StatusDto status) {
+    private String newUpdateItemBody(String description, StatusUpdateDto status) {
 
         JSONObject requestParams = new JSONObject();
         try {
@@ -312,7 +312,7 @@ class ItemControllerIT {
         return this.newUpdateItemBody(description, null);
     }
 
-    private String newUpdateStatusBody(StatusDto status) {
+    private String newUpdateStatusBody(StatusUpdateDto status) {
         return this.newUpdateItemBody(null, status);
     }
 

@@ -5,9 +5,8 @@ import com.example.todo.items.ItemService;
 import com.example.todo.items.controller.dto.ItemCreateDto;
 import com.example.todo.items.controller.dto.ItemDetailsDto;
 import com.example.todo.items.controller.dto.ItemUpdateDto;
-import com.example.todo.items.controller.dto.StatusDto;
+import com.example.todo.items.controller.dto.StatusUpdateDto;
 import com.example.todo.items.repository.ItemEntity;
-import com.example.todo.items.ItemMapper;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -39,12 +38,12 @@ public class ItemController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<ItemDetailsDto>> getAllItems(@RequestParam(required = false) StatusDto status) {
+    public ResponseEntity<Collection<ItemDetailsDto>> getAllItems(@RequestParam(required = false) StatusUpdateDto status) {
         Iterable<ItemEntity> items = findItems(status);
         return ResponseEntity.ok(StreamSupport.stream(items.spliterator(), false).map(this.itemMapper::map).toList());
     }
 
-    private Iterable<ItemEntity> findItems(StatusDto status) {
+    private Iterable<ItemEntity> findItems(StatusUpdateDto status) {
         if( status == null ){
             return this.itemService.findAll();
         }
