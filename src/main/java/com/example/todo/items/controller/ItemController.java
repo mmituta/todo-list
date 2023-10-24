@@ -5,18 +5,13 @@ import com.example.todo.items.ItemService;
 import com.example.todo.items.controller.dto.ItemCreateDto;
 import com.example.todo.items.controller.dto.ItemDetailsDto;
 import com.example.todo.items.controller.dto.ItemUpdateDto;
+import com.example.todo.items.controller.dto.StatusDto;
 import com.example.todo.items.repository.ItemEntity;
 import com.example.todo.items.ItemMapper;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -44,9 +39,17 @@ public class ItemController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<ItemDetailsDto>> getAllItems() {
-        Iterable<ItemEntity> items =this.itemService.findAll();
+    public ResponseEntity<Collection<ItemDetailsDto>> getAllItems(@RequestParam(required = false) StatusDto status) {
+        Iterable<ItemEntity> items = findItems(status);
         return ResponseEntity.ok(StreamSupport.stream(items.spliterator(), false).map(this.itemMapper::map).toList());
+    }
+
+    private Iterable<ItemEntity> findItems(StatusDto status) {
+        if( status == null ){
+            return this.itemService.findAll();
+        }
+
+        return this.itemService.findWithStatus(this.itemMapper.map(status));
     }
 
     @GetMapping("/{id}")
@@ -58,9 +61,6 @@ public class ItemController {
     @PatchMapping("/{id}")
     public ResponseEntity<ItemDetailsDto> updateItem(@PathVariable UUID id, @RequestBody final ItemUpdateDto item) {
         Optional<ItemEntity> itemEntity = this.itemService.update(id, item.getDescription(), this.itemMapper.map(item.getStatus()));
-        if (itemEntity.isPresent()) {
-            return ResponseEntity.ok(this.itemMapper.map(itemEntity.get()));
-        }
-        return ResponseEntity.notFound().build();
+        return itemEntity.map(entity -> ResponseEntity.ok(this.itemMapper.map(entity))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

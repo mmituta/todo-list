@@ -1,4 +1,4 @@
-package com.example.todo;
+package com.example.todo.controller;
 
 
 import com.example.todo.items.controller.dto.StatusDto;
@@ -12,9 +12,9 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ItemControllerIT {
 
     private static final String DESCRIPTION = "description";
@@ -103,20 +104,6 @@ class ItemControllerIT {
 
     }
 
-    @Test
-    void shouldGetAllItems() {
-        String firstId = given().body(newCreateItemBody("First", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/items")
-                .then().statusCode(equalTo(201)).extract().path(ID);
-
-
-        String secondId = given().body(newCreateItemBody("Second", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/items")
-                .then().statusCode(equalTo(201)).extract().path(ID);
-
-        ItemDetailsDto[] allItems = when().get("/items").as(ItemDetailsDto[].class);
-        assertThat(allItems).contains(detailsDto(firstId, "First", FUTURE_DATE, NOW), detailsDto(secondId, "Second", FUTURE_DATE, NOW));
-    }
 
     @Test
     void shouldMarkItemAsDone() {
@@ -236,8 +223,72 @@ class ItemControllerIT {
                 .body("finished", nullValue());
     }
 
-    private static ItemDetailsDto detailsDto(String id, String description, String dueDateTime, String created) {
-        return new ItemDetailsDto(UUID.fromString(id), description, OffsetDateTime.parse(dueDateTime), OffsetDateTime.parse(created), null, StatusDto.NOT_DONE);
+    @Test
+    void shouldGetAllItems() {
+        ItemDetailsDto first = given().body(newCreateItemBody("First", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/items").as(ItemDetailsDto.class);
+
+
+        ItemDetailsDto second = given().body(newCreateItemBody("Second", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/items").as(ItemDetailsDto.class);
+
+        ItemDetailsDto[] allItems = when().get("/items").as(ItemDetailsDto[].class);
+        assertThat(allItems).containsOnly(first, second);
+    }
+
+    @Test
+    void shouldReturnEmptyListOfAllItemsWhenThereAreNoItems() {
+        ItemDetailsDto[] allItems = when().get("/items").as(ItemDetailsDto[].class);
+        assertThat(allItems).isEmpty();
+    }
+
+    @Test
+    void shouldGetOnlyItemsMarkedAsNotDone(){
+        ItemDetailsDto notDone = given().body(newCreateItemBody("any", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/items").as(ItemDetailsDto.class);
+
+        String doneId = given().body(newCreateItemBody("any", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/items")
+                .then().statusCode(equalTo(201)).extract().path(ID);
+
+        given().body(newUpdateStatusBody(StatusDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/items/{id}", doneId)
+                .then().statusCode(200)
+                .body(STATUS, equalTo("DONE"))
+                .body("finished", equalTo(NOW));
+
+        ItemDetailsDto[] notDoneItems = given().queryParam("status", "NOT_DONE").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/items").as(ItemDetailsDto[].class);
+
+        assertThat(notDoneItems).containsOnly(notDone);
+
+    }
+
+    @Test
+    void shouldGetOnlyItemsMarkedAsDone(){
+        given().body(newCreateItemBody("any", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/items")
+                .then().statusCode(201);
+
+        String doneId = given().body(newCreateItemBody("any", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/items")
+                .then().statusCode(equalTo(201)).extract().path(ID);
+
+
+        ItemDetailsDto doneItem = given().body(newUpdateStatusBody(StatusDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/items/{id}", doneId).as(ItemDetailsDto.class);
+
+        ItemDetailsDto[] doneItems = given().queryParam("status", "DONE").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/items").as(ItemDetailsDto[].class);
+
+        assertThat(doneItems).containsOnly(doneItem);
+    }
+
+    @Test
+    void shouldReturnBadRequestResponseWhenGetAllItemsRequestContainsUnknownStatus(){
+        given().queryParam("status", "I-don't-exist").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/items")
+                .then().statusCode(400);
     }
 
     private String newUpdateItemBody(String description, StatusDto status) {

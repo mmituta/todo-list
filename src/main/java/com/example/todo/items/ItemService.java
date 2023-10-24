@@ -50,4 +50,8 @@ public class ItemService {
     public Optional<ItemEntity> getDetails(UUID id){
        return this.itemRepository.findById(id);
     }
+
+    public Iterable<ItemEntity> findWithStatus(Status status) {
+        return this.itemRepository.findAllByStatus(status);
+    }
 }
