@@ -26,7 +26,7 @@ class ItemMapperTest {
     private ItemMapperImpl itemMapper;
 
     @Test
-    void shouldMapItemThatIsPastDueWithPastDueStatus(){
+    void shouldMapItemThatIsPastDueWithPastDueStatus() {
         Item item = new Item();
         item.setDueDateTime(PAST_TIME);
 
@@ -37,7 +37,7 @@ class ItemMapperTest {
     }
 
     @Test
-    void shouldMapItemThatHasPastDueTimeEqualToCurrentTimeWithPastDueStatus(){
+    void shouldMapItemThatHasPastDueTimeEqualToCurrentTimeWithPastDueStatus() {
         Item item = new Item();
         item.setDueDateTime(CURRENT_TIME);
 

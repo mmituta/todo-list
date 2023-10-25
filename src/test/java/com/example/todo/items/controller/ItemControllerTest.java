@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
- class ItemControllerTest {
+class ItemControllerTest {
 
     private static final UUID ID = UUID.fromString("22515e9d-b9dd-4b81-a774-694f8250aec5");
     private static final String DESCRIPTION = "description";
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
     private ItemController itemController;
 
     @Test
-    void shouldGetAllTheItemsIfProvidedStatusIsNull(){
+    void shouldGetAllTheItemsIfProvidedStatusIsNull() {
         Item firstItem = new Item();
         Item secondItem = new Item();
 
@@ -57,7 +57,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-    void shouldGetOnlyItemsWithSpecifiedCompletionStatus(){
+    void shouldGetOnlyItemsWithSpecifiedCompletionStatus() {
         Item doneItem = new Item();
 
         ItemDetailsDto doneDto = ItemDetailsDto.builder().status(StatusDto.DONE).build();

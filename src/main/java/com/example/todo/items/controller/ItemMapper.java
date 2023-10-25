@@ -19,7 +19,7 @@ public abstract class ItemMapper {
     public abstract Item map(ItemCreateDto dto);
 
     @Mappings({
-            @Mapping(target="status", source="item")
+            @Mapping(target = "status", source = "item")
     })
     public abstract ItemDetailsDto map(Item item);
 
@@ -28,8 +28,9 @@ public abstract class ItemMapper {
     public abstract Status map(StatusUpdateDto status);
 
     public abstract StatusDto map(Status status);
-    public StatusDto mapStatus(Item entity){
-        if(entity.isPastDue(currentDateTimeProvider.now())){
+
+    public StatusDto mapStatus(Item entity) {
+        if (entity.isPastDue(currentDateTimeProvider.now())) {
             return StatusDto.PAST_DUE;
         }
         return this.map(entity.getStatus());

@@ -14,7 +14,7 @@ public class ItemCreatedDateEntityListener {
     }
 
     @PrePersist
-    public void prePersist(Item item){
+    public void prePersist(Item item) {
         item.setCreated(this.currentDateTimeProvider.now());
     }
 }

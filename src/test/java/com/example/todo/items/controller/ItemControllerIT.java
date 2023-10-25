@@ -163,7 +163,7 @@ class ItemControllerIT {
     }
 
     @Test
-    void shouldRejectItemUpdateWithBlankDescription(){
+    void shouldRejectItemUpdateWithBlankDescription() {
         String id = given().body(newCreateItemBody("Before", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/items")
                 .then().statusCode(equalTo(201)).extract().path(ID);

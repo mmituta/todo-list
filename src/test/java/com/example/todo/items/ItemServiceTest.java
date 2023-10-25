@@ -32,14 +32,12 @@ class ItemServiceTest {
     private ItemService service;
 
 
-
-
     @Test
-    void shouldThrowExceptionWhenUpdatingItemThatIsPastDue(){
+    void shouldThrowExceptionWhenUpdatingItemThatIsPastDue() {
         Item item = new Item(ANY_UUID, "old", FUTURE_DATE, CURRENT_TIME, null, Status.DONE);
         when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(item));
         when(this.currentDateTimeProvider.now()).thenReturn(FUTURE_DATE.plusDays(1));
 
-        assertThrows(PastDueItemModificationException.class, ()-> this.service.update(ANY_UUID, new ItemUpdate("description", Status.DONE)));
+        assertThrows(PastDueItemModificationException.class, () -> this.service.update(ANY_UUID, new ItemUpdate("description", Status.DONE)));
     }
 }

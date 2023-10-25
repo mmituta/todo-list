@@ -14,8 +14,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @DataJpaTest
-class ItemRepositoryTest
-{
+class ItemRepositoryTest {
     @MockBean
     private CurrentDateTimeProvider currentDateTimeProvider;
     @Autowired
@@ -23,7 +22,7 @@ class ItemRepositoryTest
 
 
     @Test
-    void shouldSetCreatedDateTimeWhenPersistingAnItem(){
+    void shouldSetCreatedDateTimeWhenPersistingAnItem() {
         when(this.currentDateTimeProvider.now()).thenReturn(OffsetDateTime.MIN);
 
         Item saved = this.itemRepository.save(new Item(null, "desc", OffsetDateTime.MAX, null, null, Status.NOT_DONE));

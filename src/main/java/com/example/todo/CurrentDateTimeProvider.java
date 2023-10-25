@@ -7,7 +7,7 @@ import java.time.OffsetDateTime;
 @Component
 public class CurrentDateTimeProvider {
 
-    public OffsetDateTime now(){
+    public OffsetDateTime now() {
         return OffsetDateTime.now();
     }
 }

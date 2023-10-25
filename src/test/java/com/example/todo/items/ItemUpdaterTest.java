@@ -30,19 +30,19 @@ class ItemUpdaterTest {
     private Item item;
 
     @BeforeEach
-    void setUpItem(){
+    void setUpItem() {
         item = new Item(ANY_UUID, "old", OffsetDateTime.MAX, OffsetDateTime.MIN, null, Status.NOT_DONE);
     }
 
     @Test
-    void shouldUpdateDescriptionIfDescriptionIsNotBlank()  {
+    void shouldUpdateDescriptionIfDescriptionIsNotBlank() {
         Item result = itemUpdater.updateItem(new ItemUpdate("test", null), item);
 
         assertThat(result.getDescription()).isEqualTo("test");
     }
 
     @Test
-    void shouldNotUpdateDescriptionIfDescriptionIsNull()  {
+    void shouldNotUpdateDescriptionIfDescriptionIsNull() {
         Item result = itemUpdater.updateItem(new ItemUpdate(null, null), item);
 
         assertThat(result.getDescription()).isEqualTo(item.getDescription());
@@ -50,7 +50,7 @@ class ItemUpdaterTest {
 
 
     @Test
-    void shouldUpdateStatusIfStatusIsNotNull()  {
+    void shouldUpdateStatusIfStatusIsNotNull() {
         when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
 
         Item result = itemUpdater.updateItem(new ItemUpdate(null, Status.DONE), item);
