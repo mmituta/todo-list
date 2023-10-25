@@ -59,7 +59,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ItemDetailsDto> updateItem(@PathVariable UUID id, @RequestBody final ItemUpdateDto item) throws ItemPastDueException {
+    public ResponseEntity<ItemDetailsDto> updateItem(@PathVariable UUID id, @Valid @RequestBody final ItemUpdateDto item) throws ItemPastDueException {
         Optional<ItemEntity> itemEntity = this.itemService.update(id, item.getDescription(), this.itemMapper.map(item.getStatus()));
         return itemEntity.map(entity -> ResponseEntity.ok(this.itemMapper.map(entity))).orElseGet(() -> ResponseEntity.notFound().build());
     }

@@ -163,6 +163,21 @@ class ItemControllerIT {
     }
 
     @Test
+    void shouldRejectItemUpdateWithBlankDescription(){
+        String id = given().body(newCreateItemBody("Before", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/items")
+                .then().statusCode(equalTo(201)).extract().path(ID);
+
+        given().body(newUpdateDescriptionBody(" ")).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/items/{id}", id)
+                .then().statusCode(400);
+
+        given().body(newUpdateDescriptionBody("")).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/items/{id}", id)
+                .then().statusCode(400);
+    }
+
+    @Test
     void shouldUpdateDescriptionAndStatusAtTheSameTime() {
         String id = given().body(newCreateItemBody("Before", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/items")
