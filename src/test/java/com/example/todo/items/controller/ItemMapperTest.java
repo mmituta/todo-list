@@ -1,7 +1,6 @@
-package com.example.todo.controller;
+package com.example.todo.items.controller;
 
 import com.example.todo.items.CurrentDateTimeProvider;
-import com.example.todo.items.controller.ItemMapperImpl;
 import com.example.todo.items.controller.dto.ItemDetailsDto;
 import com.example.todo.items.controller.dto.StatusDto;
 import com.example.todo.items.repository.ItemEntity;

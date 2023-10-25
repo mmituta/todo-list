@@ -1,10 +1,5 @@
-package com.example.todo;
+package com.example.todo.items;
 
-
-import com.example.todo.items.ItemPastDueException;
-import com.example.todo.items.ItemService;
-import com.example.todo.items.CurrentDateTimeProvider;
-import com.example.todo.items.ItemUpdate;
 import com.example.todo.items.repository.ItemEntity;
 import com.example.todo.items.repository.ItemRepository;
 import com.example.todo.items.repository.Status;

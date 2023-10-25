@@ -1,8 +1,5 @@
-package com.example.todo;
+package com.example.todo.items;
 
-import com.example.todo.items.CurrentDateTimeProvider;
-import com.example.todo.items.ItemUpdate;
-import com.example.todo.items.ItemUpdaterImpl;
 import com.example.todo.items.repository.ItemEntity;
 import com.example.todo.items.repository.Status;
 import org.junit.jupiter.api.BeforeEach;

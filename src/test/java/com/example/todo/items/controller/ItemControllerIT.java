@@ -1,4 +1,4 @@
-package com.example.todo.controller;
+package com.example.todo.items.controller;
 
 
 import com.example.todo.items.controller.dto.StatusUpdateDto;

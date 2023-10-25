@@ -1,10 +1,8 @@
-package com.example.todo.controller;
+package com.example.todo.items.controller;
 
 import com.example.todo.items.ItemPastDueException;
 import com.example.todo.items.ItemUpdate;
-import com.example.todo.items.controller.ItemMapper;
 import com.example.todo.items.ItemService;
-import com.example.todo.items.controller.ItemController;
 import com.example.todo.items.controller.dto.ItemDetailsDto;
 import com.example.todo.items.controller.dto.ItemUpdateDto;
 import com.example.todo.items.controller.dto.StatusDto;

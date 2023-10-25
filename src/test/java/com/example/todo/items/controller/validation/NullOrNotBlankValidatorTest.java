@@ -1,6 +1,5 @@
-package com.example.todo.controller.validation;
+package com.example.todo.items.controller.validation;
 
-import com.example.todo.items.controller.validation.NullOrNotBlankValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
