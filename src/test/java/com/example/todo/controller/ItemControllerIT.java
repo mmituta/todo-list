@@ -181,7 +181,7 @@ class ItemControllerIT {
     }
 
     @Test
-    void shouldAddTheTimeOfCompletionWhenStatusIsChangedToDone(){
+    void shouldAddTheTimeOfCompletionWhenStatusIsChangedToDone() {
         String id = given().body(newCreateItemBody("any", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/items")
                 .then().statusCode(equalTo(201)).extract().path(ID);
@@ -199,7 +199,7 @@ class ItemControllerIT {
     }
 
     @Test
-    void shouldClearTheTimeOfCompletionWhenStatusIsChangedToNotDone(){
+    void shouldClearTheTimeOfCompletionWhenStatusIsChangedToNotDone() {
         String id = given().body(newCreateItemBody("any", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/items")
                 .then().statusCode(equalTo(201)).extract().path(ID);
@@ -243,7 +243,7 @@ class ItemControllerIT {
     }
 
     @Test
-    void shouldGetOnlyItemsMarkedAsNotDone(){
+    void shouldGetOnlyItemsMarkedAsNotDone() {
         ItemDetailsDto notDone = given().body(newCreateItemBody("any", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/items").as(ItemDetailsDto.class);
 
@@ -265,7 +265,7 @@ class ItemControllerIT {
     }
 
     @Test
-    void shouldGetOnlyItemsMarkedAsDone(){
+    void shouldGetOnlyItemsMarkedAsDone() {
         given().body(newCreateItemBody("any", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/items")
                 .then().statusCode(201);
@@ -285,10 +285,22 @@ class ItemControllerIT {
     }
 
     @Test
-    void shouldReturnBadRequestResponseWhenGetAllItemsRequestContainsUnknownStatus(){
+    void shouldReturnBadRequestResponseWhenGetAllItemsRequestContainsUnknownStatus() {
         given().queryParam("status", "I-don't-exist").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/items")
                 .then().statusCode(400);
+    }
+
+    @Test
+    void shouldNotBeAllowedToUpdatePastDueItem() {
+        String id = given().body(newCreateItemBody("any", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/items")
+                .then().statusCode(201).extract().path("id");
+
+        Mockito.when(this.currentDateTimeProvider.now()).thenReturn(OffsetDateTime.parse(FUTURE_DATE).plusDays(1));
+        given().body(newUpdateItemBody("After", StatusUpdateDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().patch("/items/{id}", id)
+                .then().statusCode(422);
     }
 
     private String newUpdateItemBody(String description, StatusUpdateDto status) {

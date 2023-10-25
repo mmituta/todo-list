@@ -1,6 +1,7 @@
 package com.example.todo;
 
 
+import com.example.todo.items.ItemPastDueException;
 import com.example.todo.items.ItemService;
 import com.example.todo.items.CurrentDateTimeProvider;
 import com.example.todo.items.repository.ItemEntity;
@@ -16,12 +17,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ItemServiceTest {
     private static final UUID ANY_UUID = UUID.fromString("952b42f5-ec46-496d-84a1-af0722055e34");
     private static final OffsetDateTime CURRENT_TIME = OffsetDateTime.parse("2023-10-23T18:00:00Z");
+    public static final OffsetDateTime FUTURE_DATE = CURRENT_TIME.plusDays(1);
     @Mock
     private ItemRepository repository;
 
@@ -32,11 +35,11 @@ class ItemServiceTest {
     private ItemService service;
 
 
-
     @Test
-    void shouldUpdateDescriptionIfDescriptionIsNotBlank(){
-        ItemEntity itemEntity = new ItemEntity();
+    void shouldUpdateDescriptionIfDescriptionIsNotBlank() throws ItemPastDueException {
+        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", OffsetDateTime.MAX, OffsetDateTime.MIN, null, Status.DONE);
         when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(itemEntity));
+        when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
 
         Optional<ItemEntity> updated = service.update(ANY_UUID, "description", null);
 
@@ -45,9 +48,10 @@ class ItemServiceTest {
     }
 
     @Test
-    void shouldNotUpdateDescriptionIfDescriptionIsNull(){
+    void shouldNotUpdateDescriptionIfDescriptionIsNull() throws ItemPastDueException {
         ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", OffsetDateTime.MAX, OffsetDateTime.MIN, null, Status.DONE);
         when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(itemEntity));
+        when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
 
         Optional<ItemEntity> updated = service.update(ANY_UUID, null, null);
 
@@ -56,10 +60,11 @@ class ItemServiceTest {
     }
 
     @Test
-    void shouldNotUpdateDescriptionIfDescriptionIsBlank(){
+    void shouldNotUpdateDescriptionIfDescriptionIsBlank() throws ItemPastDueException {
         ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", OffsetDateTime.MAX, OffsetDateTime.MIN, null, Status.DONE);
 
         when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(itemEntity));
+        when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
 
         Optional<ItemEntity> updated = service.update(ANY_UUID, "  ", null);
 
@@ -69,9 +74,10 @@ class ItemServiceTest {
     }
 
     @Test
-    void shouldUpdateStatusIfStatusIsNotNull(){
-        ItemEntity itemEntity = new ItemEntity();
+    void shouldUpdateStatusIfStatusIsNotNull() throws ItemPastDueException {
+        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", FUTURE_DATE, CURRENT_TIME, null, Status.DONE);
         when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(itemEntity));
+        when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
 
         Optional<ItemEntity> updated = service.update(ANY_UUID, null, Status.DONE);
 
@@ -80,9 +86,10 @@ class ItemServiceTest {
     }
 
     @Test
-    void shouldNotUpdateStatusIfStatusIsNull(){
-        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", OffsetDateTime.MAX, OffsetDateTime.MIN, null, Status.DONE);
+    void shouldNotUpdateStatusIfStatusIsNull() throws ItemPastDueException {
+        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", FUTURE_DATE, CURRENT_TIME, null, Status.DONE);
         when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(itemEntity));
+        when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
 
         Optional<ItemEntity> updated = service.update(ANY_UUID, null, null);
 
@@ -91,9 +98,10 @@ class ItemServiceTest {
     }
 
     @Test
-    void shouldUpdateDescriptionAndStatusAtTheSameTime(){
-        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", OffsetDateTime.MAX, OffsetDateTime.MIN, null, Status.DONE);
+    void shouldUpdateDescriptionAndStatusAtTheSameTime() throws ItemPastDueException {
+        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", FUTURE_DATE, CURRENT_TIME, null, Status.DONE);
         when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(itemEntity));
+        when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
 
         Optional<ItemEntity> updated = service.update(ANY_UUID, "new", Status.NOT_DONE);
 
@@ -103,15 +111,15 @@ class ItemServiceTest {
     }
 
     @Test
-    void shouldNotUpdateIfItemDoesNotExist(){
+    void shouldNotUpdateIfItemDoesNotExist() throws ItemPastDueException {
         when(this.repository.findById(ANY_UUID)).thenReturn(Optional.empty());
 
         assertThat(service.update(ANY_UUID, "new", Status.NOT_DONE)).isEmpty();
     }
 
     @Test
-    void shouldSetTheFinishedTimeWhenItemIsMarkAsDone(){
-        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", OffsetDateTime.MAX, OffsetDateTime.MIN, null, Status.DONE);
+    void shouldSetTheFinishedTimeWhenItemIsMarkAsDone() throws ItemPastDueException {
+        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", FUTURE_DATE, CURRENT_TIME, null, Status.DONE);
         when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(itemEntity));
         when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
 
@@ -121,12 +129,22 @@ class ItemServiceTest {
     }
 
     @Test
-    void shouldClearFinishedTimeWhenItemIsMarkAsDone(){
-        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", OffsetDateTime.MAX, OffsetDateTime.MIN, CURRENT_TIME, Status.DONE);
+    void shouldClearFinishedTimeWhenItemIsMarkAsDone() throws ItemPastDueException {
+        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", FUTURE_DATE, CURRENT_TIME, null, Status.DONE);
         when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(itemEntity));
+        when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
 
         Optional<ItemEntity> updated = service.update(ANY_UUID, "new", Status.NOT_DONE);
         assertThat(updated).isPresent();
         assertThat(updated.get().getFinished()).isNull();
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingItemThatIsPastDue(){
+        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", FUTURE_DATE, CURRENT_TIME, null, Status.DONE);
+        when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(itemEntity));
+        when(this.currentDateTimeProvider.now()).thenReturn(FUTURE_DATE.plusDays(1));
+
+        assertThrows(ItemPastDueException.class, ()-> this.service.update(ANY_UUID, "description", Status.DONE));
     }
 }

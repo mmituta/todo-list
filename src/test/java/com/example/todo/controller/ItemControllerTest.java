@@ -1,5 +1,6 @@
 package com.example.todo.controller;
 
+import com.example.todo.items.ItemPastDueException;
 import com.example.todo.items.controller.ItemMapper;
 import com.example.todo.items.ItemService;
 import com.example.todo.items.controller.ItemController;
@@ -72,7 +73,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-    void shouldUpdateItem(){
+    void shouldUpdateItem() throws ItemPastDueException {
         ItemUpdateDto updateDto = ItemUpdateDto.builder().description(DESCRIPTION).status(StatusUpdateDto.DONE).build();
         when(this.itemMapper.map(StatusUpdateDto.DONE)).thenReturn(Status.DONE);
         ItemEntity updateEntity = new ItemEntity();
@@ -88,7 +89,7 @@ import static org.mockito.Mockito.*;
     }
 
     @Test
-    void shouldReturnNotFoundResponseIfUpdatedItemDoesNotExist(){
+    void shouldReturnNotFoundResponseIfUpdatedItemDoesNotExist() throws ItemPastDueException {
         ItemUpdateDto updateDto = ItemUpdateDto.builder().description(DESCRIPTION).status(StatusUpdateDto.DONE).build();
         when(this.itemMapper.map(StatusUpdateDto.DONE)).thenReturn(Status.DONE);
         when(this.itemService.update(ID, DESCRIPTION, Status.DONE)).thenReturn(Optional.empty());

@@ -1,6 +1,7 @@
 package com.example.todo.items.controller;
 
 
+import com.example.todo.items.ItemPastDueException;
 import com.example.todo.items.ItemService;
 import com.example.todo.items.controller.dto.ItemCreateDto;
 import com.example.todo.items.controller.dto.ItemDetailsDto;
@@ -44,7 +45,7 @@ public class ItemController {
     }
 
     private Iterable<ItemEntity> findItems(StatusUpdateDto status) {
-        if( status == null ){
+        if (status == null) {
             return this.itemService.findAll();
         }
 
@@ -58,7 +59,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ItemDetailsDto> updateItem(@PathVariable UUID id, @RequestBody final ItemUpdateDto item) {
+    public ResponseEntity<ItemDetailsDto> updateItem(@PathVariable UUID id, @RequestBody final ItemUpdateDto item) throws ItemPastDueException {
         Optional<ItemEntity> itemEntity = this.itemService.update(id, item.getDescription(), this.itemMapper.map(item.getStatus()));
         return itemEntity.map(entity -> ResponseEntity.ok(this.itemMapper.map(entity))).orElseGet(() -> ResponseEntity.notFound().build());
     }

@@ -30,10 +30,13 @@ public class ItemService {
     }
 
     @Transactional
-    public Optional<ItemEntity> update(UUID id, String description, Status status){
+    public Optional<ItemEntity> update(UUID id, String description, Status status) throws ItemPastDueException {
         Optional<ItemEntity> itemEntity = this.itemRepository.findById(id);
         if (itemEntity.isPresent()) {
             ItemEntity entity = itemEntity.get();
+            if( entity.isPastDue(this.currentDateTimeProvider.now())){
+                throw new ItemPastDueException();
+            }
             if (StringUtils.isNotBlank(description)) {
                 entity.setDescription(description);
             }

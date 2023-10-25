@@ -1,6 +1,8 @@
 package com.example.todo.items.repository;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.OffsetDateTime;
@@ -10,16 +12,18 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @EntityListeners(ItemCreatedDateEntityListener.class)
 public class ItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @NotBlank
     private String description;
 
+    @NotNull
     private OffsetDateTime dueDateTime;
 
     private OffsetDateTime created;
