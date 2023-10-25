@@ -31,12 +31,12 @@ public class ItemService {
     }
 
     @Transactional
-    public Optional<Item> update(UUID id, ItemUpdate update) throws ItemPastDueException {
+    public Optional<Item> update(UUID id, ItemUpdate update) throws PastDueItemModificationException {
         Optional<Item> itemEntity = this.itemRepository.findById(id);
         if (itemEntity.isPresent()) {
             Item item = itemEntity.get();
             if( item.isPastDue(this.currentDateTimeProvider.now())){
-                throw new ItemPastDueException();
+                throw new PastDueItemModificationException();
             }
             return Optional.of( itemUpdater.updateItem(update, item));
 

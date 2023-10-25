@@ -37,6 +37,6 @@ class ItemServiceTest {
         when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(item));
         when(this.currentDateTimeProvider.now()).thenReturn(FUTURE_DATE.plusDays(1));
 
-        assertThrows(ItemPastDueException.class, ()-> this.service.update(ANY_UUID, new ItemUpdate("description", Status.DONE)));
+        assertThrows(PastDueItemModificationException.class, ()-> this.service.update(ANY_UUID, new ItemUpdate("description", Status.DONE)));
     }
 }

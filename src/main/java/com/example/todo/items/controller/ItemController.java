@@ -1,7 +1,7 @@
 package com.example.todo.items.controller;
 
 
-import com.example.todo.items.ItemPastDueException;
+import com.example.todo.items.PastDueItemModificationException;
 import com.example.todo.items.ItemService;
 import com.example.todo.items.controller.dto.ItemCreateDto;
 import com.example.todo.items.controller.dto.ItemDetailsDto;
@@ -59,7 +59,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ItemDetailsDto> updateItem(@PathVariable UUID id, @Valid @RequestBody final ItemUpdateDto item) throws ItemPastDueException {
+    public ResponseEntity<ItemDetailsDto> updateItem(@PathVariable UUID id, @Valid @RequestBody final ItemUpdateDto item) throws PastDueItemModificationException {
         Optional<Item> itemEntity = this.itemService.update(id, this.itemMapper.map(item));
         return itemEntity.map(entity -> ResponseEntity.ok(this.itemMapper.map(entity))).orElseGet(() -> ResponseEntity.notFound().build());
     }
