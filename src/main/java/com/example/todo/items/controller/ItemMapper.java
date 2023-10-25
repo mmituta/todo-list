@@ -1,10 +1,8 @@
 package com.example.todo.items.controller;
 
 import com.example.todo.items.CurrentDateTimeProvider;
-import com.example.todo.items.controller.dto.ItemCreateDto;
-import com.example.todo.items.controller.dto.ItemDetailsDto;
-import com.example.todo.items.controller.dto.StatusDto;
-import com.example.todo.items.controller.dto.StatusUpdateDto;
+import com.example.todo.items.ItemUpdate;
+import com.example.todo.items.controller.dto.*;
 import com.example.todo.items.repository.ItemEntity;
 import com.example.todo.items.repository.Status;
 import org.mapstruct.Mapper;
@@ -24,6 +22,8 @@ public abstract class ItemMapper {
             @Mapping(target="status", source="item")
     })
     public abstract ItemDetailsDto map(ItemEntity item);
+
+    public abstract ItemUpdate map(ItemUpdateDto dto);
 
     public abstract Status map(StatusUpdateDto status);
 

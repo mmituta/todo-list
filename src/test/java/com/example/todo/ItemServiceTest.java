@@ -4,6 +4,7 @@ package com.example.todo;
 import com.example.todo.items.ItemPastDueException;
 import com.example.todo.items.ItemService;
 import com.example.todo.items.CurrentDateTimeProvider;
+import com.example.todo.items.ItemUpdate;
 import com.example.todo.items.repository.ItemEntity;
 import com.example.todo.items.repository.ItemRepository;
 import com.example.todo.items.repository.Status;
@@ -16,7 +17,6 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -35,109 +35,7 @@ class ItemServiceTest {
     private ItemService service;
 
 
-    @Test
-    void shouldUpdateDescriptionIfDescriptionIsNotBlank() throws ItemPastDueException {
-        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", OffsetDateTime.MAX, OffsetDateTime.MIN, null, Status.DONE);
-        when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(itemEntity));
-        when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
 
-        Optional<ItemEntity> updated = service.update(ANY_UUID, "description", null);
-
-        assertThat(updated).isPresent();
-        assertThat(updated.get().getDescription()).isEqualTo("description");
-    }
-
-    @Test
-    void shouldNotUpdateDescriptionIfDescriptionIsNull() throws ItemPastDueException {
-        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", OffsetDateTime.MAX, OffsetDateTime.MIN, null, Status.DONE);
-        when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(itemEntity));
-        when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
-
-        Optional<ItemEntity> updated = service.update(ANY_UUID, null, null);
-
-        assertThat(updated).isPresent();
-        assertThat(updated.get().getDescription()).isEqualTo("old");
-    }
-
-    @Test
-    void shouldNotUpdateDescriptionIfDescriptionIsBlank() throws ItemPastDueException {
-        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", OffsetDateTime.MAX, OffsetDateTime.MIN, null, Status.DONE);
-
-        when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(itemEntity));
-        when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
-
-        Optional<ItemEntity> updated = service.update(ANY_UUID, "  ", null);
-
-        assertThat(updated).isPresent();
-        assertThat(updated.get().getDescription()).isEqualTo("old");
-
-    }
-
-    @Test
-    void shouldUpdateStatusIfStatusIsNotNull() throws ItemPastDueException {
-        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", FUTURE_DATE, CURRENT_TIME, null, Status.DONE);
-        when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(itemEntity));
-        when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
-
-        Optional<ItemEntity> updated = service.update(ANY_UUID, null, Status.DONE);
-
-        assertThat(updated).isPresent();
-        assertThat(updated.get().getStatus()).isEqualTo(Status.DONE);
-    }
-
-    @Test
-    void shouldNotUpdateStatusIfStatusIsNull() throws ItemPastDueException {
-        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", FUTURE_DATE, CURRENT_TIME, null, Status.DONE);
-        when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(itemEntity));
-        when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
-
-        Optional<ItemEntity> updated = service.update(ANY_UUID, null, null);
-
-        assertThat(updated).isPresent();
-        assertThat(updated.get().getStatus()).isEqualTo(Status.DONE);
-    }
-
-    @Test
-    void shouldUpdateDescriptionAndStatusAtTheSameTime() throws ItemPastDueException {
-        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", FUTURE_DATE, CURRENT_TIME, null, Status.DONE);
-        when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(itemEntity));
-        when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
-
-        Optional<ItemEntity> updated = service.update(ANY_UUID, "new", Status.NOT_DONE);
-
-        assertThat(updated).isPresent();
-        assertThat(updated.get().getStatus()).isEqualTo(Status.NOT_DONE);
-        assertThat(updated.get().getDescription()).isEqualTo("new");
-    }
-
-    @Test
-    void shouldNotUpdateIfItemDoesNotExist() throws ItemPastDueException {
-        when(this.repository.findById(ANY_UUID)).thenReturn(Optional.empty());
-
-        assertThat(service.update(ANY_UUID, "new", Status.NOT_DONE)).isEmpty();
-    }
-
-    @Test
-    void shouldSetTheFinishedTimeWhenItemIsMarkAsDone() throws ItemPastDueException {
-        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", FUTURE_DATE, CURRENT_TIME, null, Status.DONE);
-        when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(itemEntity));
-        when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
-
-        Optional<ItemEntity> updated = service.update(ANY_UUID, "new", Status.DONE);
-        assertThat(updated).isPresent();
-        assertThat(updated.get().getFinished()).isEqualTo(CURRENT_TIME);
-    }
-
-    @Test
-    void shouldClearFinishedTimeWhenItemIsMarkAsDone() throws ItemPastDueException {
-        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", FUTURE_DATE, CURRENT_TIME, null, Status.DONE);
-        when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(itemEntity));
-        when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
-
-        Optional<ItemEntity> updated = service.update(ANY_UUID, "new", Status.NOT_DONE);
-        assertThat(updated).isPresent();
-        assertThat(updated.get().getFinished()).isNull();
-    }
 
     @Test
     void shouldThrowExceptionWhenUpdatingItemThatIsPastDue(){
@@ -145,6 +43,6 @@ class ItemServiceTest {
         when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(itemEntity));
         when(this.currentDateTimeProvider.now()).thenReturn(FUTURE_DATE.plusDays(1));
 
-        assertThrows(ItemPastDueException.class, ()-> this.service.update(ANY_UUID, "description", Status.DONE));
+        assertThrows(ItemPastDueException.class, ()-> this.service.update(ANY_UUID, new ItemUpdate("description", Status.DONE)));
     }
 }

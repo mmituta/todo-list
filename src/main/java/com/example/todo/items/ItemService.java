@@ -3,7 +3,6 @@ package com.example.todo.items;
 import com.example.todo.items.repository.ItemEntity;
 import com.example.todo.items.repository.ItemRepository;
 import com.example.todo.items.repository.Status;
-import io.micrometer.common.util.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,9 +15,12 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final CurrentDateTimeProvider currentDateTimeProvider;
 
-    public ItemService(ItemRepository itemRepository, CurrentDateTimeProvider currentDateTimeProvider) {
+    private final ItemUpdater itemUpdater;
+
+    public ItemService(ItemRepository itemRepository, CurrentDateTimeProvider currentDateTimeProvider, ItemUpdater itemUpdater) {
         this.itemRepository = itemRepository;
         this.currentDateTimeProvider = currentDateTimeProvider;
+        this.itemUpdater = itemUpdater;
     }
 
     public ItemEntity create(ItemEntity item){
@@ -30,21 +32,14 @@ public class ItemService {
     }
 
     @Transactional
-    public Optional<ItemEntity> update(UUID id, String description, Status status) throws ItemPastDueException {
+    public Optional<ItemEntity> update(UUID id, ItemUpdate update) throws ItemPastDueException {
         Optional<ItemEntity> itemEntity = this.itemRepository.findById(id);
         if (itemEntity.isPresent()) {
-            ItemEntity entity = itemEntity.get();
-            if( entity.isPastDue(this.currentDateTimeProvider.now())){
+            ItemEntity item = itemEntity.get();
+            if( item.isPastDue(this.currentDateTimeProvider.now())){
                 throw new ItemPastDueException();
             }
-            if (StringUtils.isNotBlank(description)) {
-                entity.setDescription(description);
-            }
-            if (status != null) {
-                entity.setStatus(status);
-                entity.setFinished(status == Status.DONE ? this.currentDateTimeProvider.now(): null);
-            }
-            return Optional.of(entity);
+            return Optional.of( itemUpdater.updateItem(update, item));
 
         }
         return itemEntity;

@@ -1,6 +1,7 @@
 package com.example.todo.controller;
 
 import com.example.todo.items.ItemPastDueException;
+import com.example.todo.items.ItemUpdate;
 import com.example.todo.items.controller.ItemMapper;
 import com.example.todo.items.ItemService;
 import com.example.todo.items.controller.ItemController;
@@ -75,9 +76,10 @@ import static org.mockito.Mockito.*;
     @Test
     void shouldUpdateItem() throws ItemPastDueException {
         ItemUpdateDto updateDto = ItemUpdateDto.builder().description(DESCRIPTION).status(StatusUpdateDto.DONE).build();
-        when(this.itemMapper.map(StatusUpdateDto.DONE)).thenReturn(Status.DONE);
+        ItemUpdate update = new ItemUpdate(DESCRIPTION, Status.DONE);
+        when(this.itemMapper.map(updateDto)).thenReturn(update);
         ItemEntity updateEntity = new ItemEntity();
-        when(this.itemService.update(ID, DESCRIPTION, Status.DONE)).thenReturn(Optional.of(updateEntity));
+        when(this.itemService.update(ID, update)).thenReturn(Optional.of(updateEntity));
         ItemDetailsDto expectedDto = ItemDetailsDto.builder().id(ID).build();
         when(this.itemMapper.map(updateEntity)).thenReturn(expectedDto);
 
@@ -91,8 +93,9 @@ import static org.mockito.Mockito.*;
     @Test
     void shouldReturnNotFoundResponseIfUpdatedItemDoesNotExist() throws ItemPastDueException {
         ItemUpdateDto updateDto = ItemUpdateDto.builder().description(DESCRIPTION).status(StatusUpdateDto.DONE).build();
-        when(this.itemMapper.map(StatusUpdateDto.DONE)).thenReturn(Status.DONE);
-        when(this.itemService.update(ID, DESCRIPTION, Status.DONE)).thenReturn(Optional.empty());
+        ItemUpdate update = new ItemUpdate(DESCRIPTION, Status.DONE);
+        when(this.itemMapper.map(updateDto)).thenReturn(update);
+        when(this.itemService.update(ID, update)).thenReturn(Optional.empty());
 
         ResponseEntity<ItemDetailsDto> result = this.itemController.updateItem(ID, updateDto);
 
