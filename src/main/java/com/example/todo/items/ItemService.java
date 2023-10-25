@@ -25,30 +25,33 @@ public class ItemService {
         this.itemUpdater = itemUpdater;
     }
 
-    public Item create(Item item){
+    public Item create(Item item) {
         return this.itemRepository.save(item);
     }
 
-    public Iterable<Item> findAll(){
+    public Iterable<Item> findAll() {
         return this.itemRepository.findAll();
     }
 
     @Transactional
     public Optional<Item> update(UUID id, ItemUpdate update) throws PastDueItemModificationException {
         Optional<Item> itemEntity = this.itemRepository.findById(id);
-        if (itemEntity.isPresent()) {
-            Item item = itemEntity.get();
-            if( item.isPastDue(this.currentDateTimeProvider.now())){
-                throw new PastDueItemModificationException();
-            }
-            return Optional.of( itemUpdater.updateItem(update, item));
-
+        if (itemEntity.isEmpty()) {
+            return itemEntity;
         }
-        return itemEntity;
+        Item item = itemEntity.get();
+        if (isPastDue(item)) {
+            throw new PastDueItemModificationException();
+        }
+        return Optional.of(itemUpdater.updateItem(update, item));
     }
 
-    public Optional<Item> getDetails(UUID id){
-       return this.itemRepository.findById(id);
+    private boolean isPastDue(Item item) {
+        return item.isPastDue(this.currentDateTimeProvider.now());
+    }
+
+    public Optional<Item> getDetails(UUID id) {
+        return this.itemRepository.findById(id);
     }
 
     public Iterable<Item> findWithStatus(Status status) {
