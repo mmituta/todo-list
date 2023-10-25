@@ -2,7 +2,7 @@ package com.example.todo.items.controller;
 
 
 import com.example.todo.items.controller.dto.StatusUpdateDto;
-import com.example.todo.items.CurrentDateTimeProvider;
+import com.example.todo.CurrentDateTimeProvider;
 import com.example.todo.items.controller.dto.ItemDetailsDto;
 import org.json.JSONException;
 import org.json.JSONObject;

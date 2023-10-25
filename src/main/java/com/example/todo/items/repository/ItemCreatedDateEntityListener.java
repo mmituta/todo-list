@@ -1,7 +1,7 @@
 package com.example.todo.items.repository;
 
-import com.example.todo.items.CurrentDateTimeProvider;
-import com.example.todo.items.Item;
+import com.example.todo.CurrentDateTimeProvider;
+import com.example.todo.items.model.Item;
 import jakarta.persistence.PrePersist;
 import org.springframework.stereotype.Component;
 

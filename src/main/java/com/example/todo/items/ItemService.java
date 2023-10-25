@@ -1,7 +1,10 @@
 package com.example.todo.items;
 
+import com.example.todo.CurrentDateTimeProvider;
+import com.example.todo.items.model.Item;
+import com.example.todo.items.model.ItemUpdate;
 import com.example.todo.items.repository.ItemRepository;
-import com.example.todo.items.repository.Status;
+import com.example.todo.items.model.Status;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

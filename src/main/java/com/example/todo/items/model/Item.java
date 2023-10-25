@@ -1,7 +1,6 @@
-package com.example.todo.items;
+package com.example.todo.items.model;
 
 import com.example.todo.items.repository.ItemCreatedDateEntityListener;
-import com.example.todo.items.repository.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

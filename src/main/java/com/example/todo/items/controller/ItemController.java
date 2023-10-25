@@ -7,7 +7,7 @@ import com.example.todo.items.controller.dto.ItemCreateDto;
 import com.example.todo.items.controller.dto.ItemDetailsDto;
 import com.example.todo.items.controller.dto.ItemUpdateDto;
 import com.example.todo.items.controller.dto.StatusUpdateDto;
-import com.example.todo.items.Item;
+import com.example.todo.items.model.Item;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

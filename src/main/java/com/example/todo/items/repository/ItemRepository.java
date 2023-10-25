@@ -1,6 +1,7 @@
 package com.example.todo.items.repository;
 
-import com.example.todo.items.Item;
+import com.example.todo.items.model.Item;
+import com.example.todo.items.model.Status;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

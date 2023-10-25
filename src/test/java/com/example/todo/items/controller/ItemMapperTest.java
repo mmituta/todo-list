@@ -1,9 +1,9 @@
 package com.example.todo.items.controller;
 
-import com.example.todo.items.CurrentDateTimeProvider;
+import com.example.todo.CurrentDateTimeProvider;
 import com.example.todo.items.controller.dto.ItemDetailsDto;
 import com.example.todo.items.controller.dto.StatusDto;
-import com.example.todo.items.Item;
+import com.example.todo.items.model.Item;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

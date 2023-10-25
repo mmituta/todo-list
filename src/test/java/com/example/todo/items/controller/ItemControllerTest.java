@@ -1,14 +1,14 @@
 package com.example.todo.items.controller;
 
 import com.example.todo.items.PastDueItemModificationException;
-import com.example.todo.items.ItemUpdate;
+import com.example.todo.items.model.ItemUpdate;
 import com.example.todo.items.ItemService;
 import com.example.todo.items.controller.dto.ItemDetailsDto;
 import com.example.todo.items.controller.dto.ItemUpdateDto;
 import com.example.todo.items.controller.dto.StatusDto;
 import com.example.todo.items.controller.dto.StatusUpdateDto;
-import com.example.todo.items.Item;
-import com.example.todo.items.repository.Status;
+import com.example.todo.items.model.Item;
+import com.example.todo.items.model.Status;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

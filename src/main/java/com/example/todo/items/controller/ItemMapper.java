@@ -1,10 +1,10 @@
 package com.example.todo.items.controller;
 
-import com.example.todo.items.CurrentDateTimeProvider;
-import com.example.todo.items.ItemUpdate;
+import com.example.todo.CurrentDateTimeProvider;
+import com.example.todo.items.model.ItemUpdate;
 import com.example.todo.items.controller.dto.*;
-import com.example.todo.items.Item;
-import com.example.todo.items.repository.Status;
+import com.example.todo.items.model.Item;
+import com.example.todo.items.model.Status;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
