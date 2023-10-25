@@ -1,6 +1,5 @@
 package com.example.todo.items;
 
-import com.example.todo.items.repository.ItemEntity;
 import com.example.todo.items.repository.Status;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,25 +24,25 @@ class ItemUpdaterTest {
 
     @InjectMocks
     private ItemUpdaterImpl itemUpdater;
-    private ItemEntity itemEntity;
+    private Item item;
 
     @BeforeEach
     void setUpItem(){
-        itemEntity = new ItemEntity(ANY_UUID, "old", OffsetDateTime.MAX, OffsetDateTime.MIN, null, Status.NOT_DONE);
+        item = new Item(ANY_UUID, "old", OffsetDateTime.MAX, OffsetDateTime.MIN, null, Status.NOT_DONE);
     }
 
     @Test
     void shouldUpdateDescriptionIfDescriptionIsNotBlank()  {
-        ItemEntity result = itemUpdater.updateItem(new ItemUpdate("test", null), itemEntity);
+        Item result = itemUpdater.updateItem(new ItemUpdate("test", null), item);
 
         assertThat(result.getDescription()).isEqualTo("test");
     }
 
     @Test
     void shouldNotUpdateDescriptionIfDescriptionIsNull()  {
-        ItemEntity result = itemUpdater.updateItem(new ItemUpdate(null, null), itemEntity);
+        Item result = itemUpdater.updateItem(new ItemUpdate(null, null), item);
 
-        assertThat(result.getDescription()).isEqualTo(itemEntity.getDescription());
+        assertThat(result.getDescription()).isEqualTo(item.getDescription());
     }
 
 
@@ -51,7 +50,7 @@ class ItemUpdaterTest {
     void shouldUpdateStatusIfStatusIsNotNull()  {
         when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
 
-        ItemEntity result = itemUpdater.updateItem(new ItemUpdate(null, Status.DONE), itemEntity);
+        Item result = itemUpdater.updateItem(new ItemUpdate(null, Status.DONE), item);
 
         assertThat(result.getStatus()).isEqualTo(Status.DONE);
         assertThat(result.getFinished()).isEqualTo(CURRENT_TIME);
@@ -59,15 +58,15 @@ class ItemUpdaterTest {
 
     @Test
     void shouldNotUpdateStatusIfStatusIsNull() {
-        ItemEntity result = itemUpdater.updateItem(new ItemUpdate(null, null), itemEntity);
+        Item result = itemUpdater.updateItem(new ItemUpdate(null, null), item);
 
-        assertThat(result.getStatus()).isEqualTo(itemEntity.getStatus());
+        assertThat(result.getStatus()).isEqualTo(item.getStatus());
     }
 
     @Test
     void shouldUpdateDescriptionAndStatusAtTheSameTime() {
         when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
-        ItemEntity result = itemUpdater.updateItem(new ItemUpdate("test", Status.DONE), itemEntity);
+        Item result = itemUpdater.updateItem(new ItemUpdate("test", Status.DONE), item);
 
         assertThat(result.getStatus()).isEqualTo(Status.DONE);
         assertThat(result.getDescription()).isEqualTo("test");
@@ -76,9 +75,9 @@ class ItemUpdaterTest {
 
     @Test
     void shouldClearFinishedTimeWhenTheItemIsMarkedAsNotDone() {
-        ItemEntity doneItem = new ItemEntity(ANY_UUID, "old", OffsetDateTime.MAX, OffsetDateTime.MIN, CURRENT_TIME, Status.DONE);
+        Item doneItem = new Item(ANY_UUID, "old", OffsetDateTime.MAX, OffsetDateTime.MIN, CURRENT_TIME, Status.DONE);
 
-        ItemEntity result = itemUpdater.updateItem(new ItemUpdate(null, Status.NOT_DONE), doneItem);
+        Item result = itemUpdater.updateItem(new ItemUpdate(null, Status.NOT_DONE), doneItem);
         assertThat(result.getFinished()).isNull();
     }
 

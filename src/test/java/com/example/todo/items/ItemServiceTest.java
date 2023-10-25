@@ -1,6 +1,5 @@
 package com.example.todo.items;
 
-import com.example.todo.items.repository.ItemEntity;
 import com.example.todo.items.repository.ItemRepository;
 import com.example.todo.items.repository.Status;
 import org.junit.jupiter.api.Test;
@@ -34,8 +33,8 @@ class ItemServiceTest {
 
     @Test
     void shouldThrowExceptionWhenUpdatingItemThatIsPastDue(){
-        ItemEntity itemEntity = new ItemEntity(ANY_UUID, "old", FUTURE_DATE, CURRENT_TIME, null, Status.DONE);
-        when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(itemEntity));
+        Item item = new Item(ANY_UUID, "old", FUTURE_DATE, CURRENT_TIME, null, Status.DONE);
+        when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(item));
         when(this.currentDateTimeProvider.now()).thenReturn(FUTURE_DATE.plusDays(1));
 
         assertThrows(ItemPastDueException.class, ()-> this.service.update(ANY_UUID, new ItemUpdate("description", Status.DONE)));

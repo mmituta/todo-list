@@ -7,7 +7,7 @@ import com.example.todo.items.controller.dto.ItemDetailsDto;
 import com.example.todo.items.controller.dto.ItemUpdateDto;
 import com.example.todo.items.controller.dto.StatusDto;
 import com.example.todo.items.controller.dto.StatusUpdateDto;
-import com.example.todo.items.repository.ItemEntity;
+import com.example.todo.items.Item;
 import com.example.todo.items.repository.Status;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,8 +41,8 @@ import static org.mockito.Mockito.*;
 
     @Test
     void shouldGetAllTheItemsIfProvidedStatusIsNull(){
-        ItemEntity firstItem = new ItemEntity();
-        ItemEntity secondItem = new ItemEntity();
+        Item firstItem = new Item();
+        Item secondItem = new Item();
 
         ItemDetailsDto firstDto = ItemDetailsDto.builder().description("first").build();
         ItemDetailsDto secondDto = ItemDetailsDto.builder().description("second").build();
@@ -58,7 +58,7 @@ import static org.mockito.Mockito.*;
 
     @Test
     void shouldGetOnlyItemsWithSpecifiedCompletionStatus(){
-        ItemEntity doneItem = new ItemEntity();
+        Item doneItem = new Item();
 
         ItemDetailsDto doneDto = ItemDetailsDto.builder().status(StatusDto.DONE).build();
         when(this.itemMapper.map(doneItem)).thenReturn(doneDto);
@@ -76,7 +76,7 @@ import static org.mockito.Mockito.*;
         ItemUpdateDto updateDto = ItemUpdateDto.builder().description(DESCRIPTION).status(StatusUpdateDto.DONE).build();
         ItemUpdate update = new ItemUpdate(DESCRIPTION, Status.DONE);
         when(this.itemMapper.map(updateDto)).thenReturn(update);
-        ItemEntity updateEntity = new ItemEntity();
+        Item updateEntity = new Item();
         when(this.itemService.update(ID, update)).thenReturn(Optional.of(updateEntity));
         ItemDetailsDto expectedDto = ItemDetailsDto.builder().id(ID).build();
         when(this.itemMapper.map(updateEntity)).thenReturn(expectedDto);

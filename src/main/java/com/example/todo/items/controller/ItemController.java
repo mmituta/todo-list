@@ -7,7 +7,7 @@ import com.example.todo.items.controller.dto.ItemCreateDto;
 import com.example.todo.items.controller.dto.ItemDetailsDto;
 import com.example.todo.items.controller.dto.ItemUpdateDto;
 import com.example.todo.items.controller.dto.StatusUpdateDto;
-import com.example.todo.items.repository.ItemEntity;
+import com.example.todo.items.Item;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -33,18 +33,18 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<ItemDetailsDto> create(@Valid @RequestBody final ItemCreateDto item) {
-        ItemEntity saved = this.itemService.create(this.itemMapper.map(item));
+        Item saved = this.itemService.create(this.itemMapper.map(item));
 
         return ResponseEntity.status(201).body(this.itemMapper.map(saved));
     }
 
     @GetMapping
     public ResponseEntity<Collection<ItemDetailsDto>> getAllItems(@RequestParam(required = false) StatusUpdateDto status) {
-        Iterable<ItemEntity> items = findItems(status);
+        Iterable<Item> items = findItems(status);
         return ResponseEntity.ok(StreamSupport.stream(items.spliterator(), false).map(this.itemMapper::map).toList());
     }
 
-    private Iterable<ItemEntity> findItems(StatusUpdateDto status) {
+    private Iterable<Item> findItems(StatusUpdateDto status) {
         if (status == null) {
             return this.itemService.findAll();
         }
@@ -54,13 +54,13 @@ public class ItemController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ItemDetailsDto> getDetails(@PathVariable UUID id) {
-        Optional<ItemEntity> itemEntity = this.itemService.getDetails(id);
+        Optional<Item> itemEntity = this.itemService.getDetails(id);
         return itemEntity.map(entity -> ResponseEntity.ok(this.itemMapper.map(entity))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<ItemDetailsDto> updateItem(@PathVariable UUID id, @Valid @RequestBody final ItemUpdateDto item) throws ItemPastDueException {
-        Optional<ItemEntity> itemEntity = this.itemService.update(id, this.itemMapper.map(item));
+        Optional<Item> itemEntity = this.itemService.update(id, this.itemMapper.map(item));
         return itemEntity.map(entity -> ResponseEntity.ok(this.itemMapper.map(entity))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

@@ -3,7 +3,7 @@ package com.example.todo.items.controller;
 import com.example.todo.items.CurrentDateTimeProvider;
 import com.example.todo.items.ItemUpdate;
 import com.example.todo.items.controller.dto.*;
-import com.example.todo.items.repository.ItemEntity;
+import com.example.todo.items.Item;
 import com.example.todo.items.repository.Status;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,19 +16,19 @@ public abstract class ItemMapper {
     @Autowired
     protected CurrentDateTimeProvider currentDateTimeProvider;
 
-    public abstract ItemEntity map(ItemCreateDto dto);
+    public abstract Item map(ItemCreateDto dto);
 
     @Mappings({
             @Mapping(target="status", source="item")
     })
-    public abstract ItemDetailsDto map(ItemEntity item);
+    public abstract ItemDetailsDto map(Item item);
 
     public abstract ItemUpdate map(ItemUpdateDto dto);
 
     public abstract Status map(StatusUpdateDto status);
 
     public abstract StatusDto map(Status status);
-    public StatusDto mapStatus(ItemEntity entity){
+    public StatusDto mapStatus(Item entity){
         if(entity.isPastDue(currentDateTimeProvider.now())){
             return StatusDto.PAST_DUE;
         }

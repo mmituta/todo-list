@@ -1,6 +1,5 @@
 package com.example.todo.items;
 
-import com.example.todo.items.repository.ItemEntity;
 import com.example.todo.items.repository.Status;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,7 @@ public abstract class ItemUpdater {
             @Mapping(target="finished", source="status")
     })
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    public abstract ItemEntity updateItem(ItemUpdate update, @MappingTarget ItemEntity item);
+    public abstract Item updateItem(ItemUpdate update, @MappingTarget Item item);
 
     protected OffsetDateTime map(Status status ){
         return status == Status.DONE? this.currentDateTimeProvider.now() : null;

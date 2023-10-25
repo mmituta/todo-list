@@ -3,7 +3,7 @@ package com.example.todo.items.controller;
 import com.example.todo.items.CurrentDateTimeProvider;
 import com.example.todo.items.controller.dto.ItemDetailsDto;
 import com.example.todo.items.controller.dto.StatusDto;
-import com.example.todo.items.repository.ItemEntity;
+import com.example.todo.items.Item;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,23 +27,23 @@ class ItemMapperTest {
 
     @Test
     void shouldMapItemThatIsPastDueWithPastDueStatus(){
-        ItemEntity itemEntity = new ItemEntity();
-        itemEntity.setDueDateTime(PAST_TIME);
+        Item item = new Item();
+        item.setDueDateTime(PAST_TIME);
 
         when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
 
-        ItemDetailsDto dto = itemMapper.map(itemEntity);
+        ItemDetailsDto dto = itemMapper.map(item);
         assertThat(dto.getStatus()).isEqualTo(StatusDto.PAST_DUE);
     }
 
     @Test
     void shouldMapItemThatHasPastDueTimeEqualToCurrentTimeWithPastDueStatus(){
-        ItemEntity itemEntity = new ItemEntity();
-        itemEntity.setDueDateTime(CURRENT_TIME);
+        Item item = new Item();
+        item.setDueDateTime(CURRENT_TIME);
 
         when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
 
-        ItemDetailsDto dto = itemMapper.map(itemEntity);
+        ItemDetailsDto dto = itemMapper.map(item);
         assertThat(dto.getStatus()).isEqualTo(StatusDto.PAST_DUE);
     }
 }

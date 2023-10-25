@@ -1,5 +1,7 @@
-package com.example.todo.items.repository;
+package com.example.todo.items;
 
+import com.example.todo.items.repository.ItemCreatedDateEntityListener;
+import com.example.todo.items.repository.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(ItemCreatedDateEntityListener.class)
-public class ItemEntity {
+public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

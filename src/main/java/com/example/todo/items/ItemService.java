@@ -1,6 +1,5 @@
 package com.example.todo.items;
 
-import com.example.todo.items.repository.ItemEntity;
 import com.example.todo.items.repository.ItemRepository;
 import com.example.todo.items.repository.Status;
 import org.springframework.stereotype.Service;
@@ -23,19 +22,19 @@ public class ItemService {
         this.itemUpdater = itemUpdater;
     }
 
-    public ItemEntity create(ItemEntity item){
+    public Item create(Item item){
         return this.itemRepository.save(item);
     }
 
-    public Iterable<ItemEntity> findAll(){
+    public Iterable<Item> findAll(){
         return this.itemRepository.findAll();
     }
 
     @Transactional
-    public Optional<ItemEntity> update(UUID id, ItemUpdate update) throws ItemPastDueException {
-        Optional<ItemEntity> itemEntity = this.itemRepository.findById(id);
+    public Optional<Item> update(UUID id, ItemUpdate update) throws ItemPastDueException {
+        Optional<Item> itemEntity = this.itemRepository.findById(id);
         if (itemEntity.isPresent()) {
-            ItemEntity item = itemEntity.get();
+            Item item = itemEntity.get();
             if( item.isPastDue(this.currentDateTimeProvider.now())){
                 throw new ItemPastDueException();
             }
@@ -45,11 +44,11 @@ public class ItemService {
         return itemEntity;
     }
 
-    public Optional<ItemEntity> getDetails(UUID id){
+    public Optional<Item> getDetails(UUID id){
        return this.itemRepository.findById(id);
     }
 
-    public Iterable<ItemEntity> findWithStatus(Status status) {
+    public Iterable<Item> findWithStatus(Status status) {
         return this.itemRepository.findAllByStatus(status);
     }
 }

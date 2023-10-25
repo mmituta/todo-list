@@ -1,6 +1,7 @@
 package com.example.todo.items.repository;
 
 import com.example.todo.items.CurrentDateTimeProvider;
+import com.example.todo.items.Item;
 import jakarta.persistence.PrePersist;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,7 @@ public class ItemCreatedDateEntityListener {
     }
 
     @PrePersist
-    public void prePersist(ItemEntity itemEntity){
-        itemEntity.setCreated(this.currentDateTimeProvider.now());
+    public void prePersist(Item item){
+        item.setCreated(this.currentDateTimeProvider.now());
     }
 }
