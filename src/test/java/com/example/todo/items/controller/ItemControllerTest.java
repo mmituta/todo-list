@@ -62,10 +62,9 @@ class ItemControllerTest {
 
         ItemDetailsDto doneDto = ItemDetailsDto.builder().status(StatusDto.DONE).build();
         when(this.itemMapper.map(doneItem)).thenReturn(doneDto);
-        when(this.itemMapper.map(StatusUpdateDto.DONE)).thenReturn(Status.DONE);
         when(this.itemService.findWithStatus(Status.DONE)).thenReturn(singleton(doneItem));
 
-        ResponseEntity<Collection<ItemDetailsDto>> result = this.itemController.getAllItems(StatusUpdateDto.DONE);
+        ResponseEntity<Collection<ItemDetailsDto>> result = this.itemController.getAllItems(StatusDto.DONE);
 
         assertThat(result.getBody()).containsOnly(doneDto);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));

@@ -30,10 +30,11 @@ class ItemControllerIT {
     private static final String DUE_DATE_TIME = "dueDateTime";
     private static final String STATUS = "status";
     private static final String ID = "id";
+    private static final String FUTURE_DATE = "2023-10-22T15:35:30Z";
+    private static final String PAST_DATE = "2023-10-20T15:35:30Z";
+    private static final String NOW = "2023-10-21T12:00:00Z";
     @MockBean
     private CurrentDateTimeProvider currentDateTimeProvider;
-    private static final String FUTURE_DATE = "2023-10-22T15:35:30Z";
-    private static final String NOW = "2023-10-21T12:00:00Z";
 
     @BeforeEach
     void setUpCurrentDateTime() {
@@ -252,6 +253,19 @@ class ItemControllerIT {
     }
 
     @Test
+    void shouldGetPastDueItems() {
+        ItemDetailsDto first = given().body(newCreateItemBody("First", PAST_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/items").as(ItemDetailsDto.class);
+
+
+        given().body(newCreateItemBody("Second", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/items").then().statusCode(201);
+
+        ItemDetailsDto[] allItems = given().queryParam("status", "PAST_DUE").when().get("/items").as(ItemDetailsDto[].class);
+        assertThat(allItems).containsOnly(first);
+    }
+
+    @Test
     void shouldReturnEmptyListOfAllItemsWhenThereAreNoItems() {
         ItemDetailsDto[] allItems = when().get("/items").as(ItemDetailsDto[].class);
         assertThat(allItems).isEmpty();
@@ -261,6 +275,10 @@ class ItemControllerIT {
     void shouldGetOnlyItemsMarkedAsNotDone() {
         ItemDetailsDto notDone = given().body(newCreateItemBody("any", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/items").as(ItemDetailsDto.class);
+
+        given().body(newCreateItemBody("any", PAST_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/items")
+                .then().statusCode(201);
 
         String doneId = given().body(newCreateItemBody("any", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/items")
@@ -276,7 +294,6 @@ class ItemControllerIT {
                 .when().get("/items").as(ItemDetailsDto[].class);
 
         assertThat(notDoneItems).containsOnly(notDone);
-
     }
 
     @Test
@@ -288,7 +305,6 @@ class ItemControllerIT {
         String doneId = given().body(newCreateItemBody("any", FUTURE_DATE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/items")
                 .then().statusCode(equalTo(201)).extract().path(ID);
-
 
         ItemDetailsDto doneItem = given().body(newUpdateStatusBody(StatusUpdateDto.DONE)).contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().patch("/items/{id}", doneId).as(ItemDetailsDto.class);

@@ -55,6 +55,10 @@ public class ItemService {
     }
 
     public Iterable<Item> findWithStatus(Status status) {
-        return this.itemRepository.findAllByStatus(status);
+        return this.itemRepository.findAllByStatusAndDueDateTimeAfter(status, this.currentDateTimeProvider.now());
+    }
+
+    public Iterable<Item> findPastDueItems() {
+        return this.itemRepository.findAllByDueDateTimeLessThanEqual(this.currentDateTimeProvider.now());
     }
 }

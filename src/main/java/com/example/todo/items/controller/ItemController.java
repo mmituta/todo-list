@@ -3,12 +3,10 @@ package com.example.todo.items.controller;
 
 import com.example.todo.items.PastDueItemModificationException;
 import com.example.todo.items.ItemService;
-import com.example.todo.items.controller.dto.ItemCreateDto;
-import com.example.todo.items.controller.dto.ItemDetailsDto;
-import com.example.todo.items.controller.dto.ItemUpdateDto;
-import com.example.todo.items.controller.dto.StatusUpdateDto;
+import com.example.todo.items.controller.dto.*;
 import com.example.todo.items.model.Item;
 
+import com.example.todo.items.model.Status;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -52,7 +50,7 @@ public class ItemController {
 
     @Operation(summary = "Allows to get a list of all items. It allows to specify if the returned value should be filtered by status.",
             parameters = {
-                @Parameter(name = "status", description = "When set, the endpoint will filter the items by the provided status")
+                    @Parameter(name = "status", description = "When set, the endpoint will filter the items by the provided status")
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Found result for the specified criteria",
@@ -60,17 +58,21 @@ public class ItemController {
                     @ApiResponse(responseCode = "400", description = "Incorrect status parameter value", content = @Content)}
     )
     @GetMapping
-    public ResponseEntity<Collection<ItemDetailsDto>> getAllItems(@RequestParam(required = false) StatusUpdateDto status) {
+    public ResponseEntity<Collection<ItemDetailsDto>> getAllItems(@RequestParam(required = false) StatusDto status) {
         Iterable<Item> items = findItems(status);
         return ResponseEntity.ok(StreamSupport.stream(items.spliterator(), false).map(this.itemMapper::map).toList());
     }
 
-    private Iterable<Item> findItems(StatusUpdateDto status) {
+    private Iterable<Item> findItems(StatusDto status) {
         if (status == null) {
             return this.itemService.findAll();
         }
 
-        return this.itemService.findWithStatus(this.itemMapper.map(status));
+        if (status == StatusDto.PAST_DUE) {
+            return this.itemService.findPastDueItems();
+        }
+
+        return this.itemService.findWithStatus(status == StatusDto.DONE ? Status.DONE : Status.NOT_DONE);
     }
 
     @Operation(summary = "Gets the details of the specified item",
