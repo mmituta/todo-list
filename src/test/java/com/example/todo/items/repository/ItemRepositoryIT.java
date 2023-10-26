@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @DataJpaTest
-class ItemRepositoryTest {
+class ItemRepositoryIT {
     @MockBean
     private CurrentDateTimeProvider currentDateTimeProvider;
     @Autowired
