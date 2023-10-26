@@ -31,7 +31,7 @@ public class Item {
 
     private OffsetDateTime finished;
 
-    private Status status = Status.NOT_DONE;
+    private boolean done = false;
 
 
     public boolean isPastDue(OffsetDateTime now) {

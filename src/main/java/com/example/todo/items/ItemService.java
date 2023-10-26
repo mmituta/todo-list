@@ -4,7 +4,6 @@ import com.example.todo.CurrentDateTimeProvider;
 import com.example.todo.items.model.Item;
 import com.example.todo.items.model.ItemUpdate;
 import com.example.todo.items.repository.ItemRepository;
-import com.example.todo.items.model.Status;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,8 +53,8 @@ public class ItemService {
         return this.itemRepository.findById(id);
     }
 
-    public Iterable<Item> findWithStatus(Status status) {
-        return this.itemRepository.findAllByStatusAndDueDateTimeAfter(status, this.currentDateTimeProvider.now());
+    public Iterable<Item> findWithStatus(boolean isDone) {
+        return this.itemRepository.findAllByDoneAndDueDateTimeAfter(isDone, this.currentDateTimeProvider.now());
     }
 
     public Iterable<Item> findPastDueItems() {

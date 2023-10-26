@@ -8,7 +8,6 @@ import com.example.todo.items.controller.dto.ItemUpdateDto;
 import com.example.todo.items.controller.dto.StatusDto;
 import com.example.todo.items.controller.dto.StatusUpdateDto;
 import com.example.todo.items.model.Item;
-import com.example.todo.items.model.Status;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -62,7 +61,7 @@ class ItemControllerTest {
 
         ItemDetailsDto doneDto = ItemDetailsDto.builder().status(StatusDto.DONE).build();
         when(this.itemMapper.map(doneItem)).thenReturn(doneDto);
-        when(this.itemService.findWithStatus(Status.DONE)).thenReturn(singleton(doneItem));
+        when(this.itemService.findWithStatus(true)).thenReturn(singleton(doneItem));
 
         ResponseEntity<Collection<ItemDetailsDto>> result = this.itemController.getAllItems(StatusDto.DONE);
 
@@ -73,7 +72,7 @@ class ItemControllerTest {
     @Test
     void shouldUpdateItem() throws PastDueItemModificationException {
         ItemUpdateDto updateDto = ItemUpdateDto.builder().description(DESCRIPTION).status(StatusUpdateDto.DONE).build();
-        ItemUpdate update = new ItemUpdate(DESCRIPTION, Status.DONE);
+        ItemUpdate update = new ItemUpdate(DESCRIPTION, true);
         when(this.itemMapper.map(updateDto)).thenReturn(update);
         Item updateEntity = new Item();
         when(this.itemService.update(ID, update)).thenReturn(Optional.of(updateEntity));
@@ -90,7 +89,7 @@ class ItemControllerTest {
     @Test
     void shouldReturnNotFoundResponseIfUpdatedItemDoesNotExist() throws PastDueItemModificationException {
         ItemUpdateDto updateDto = ItemUpdateDto.builder().description(DESCRIPTION).status(StatusUpdateDto.DONE).build();
-        ItemUpdate update = new ItemUpdate(DESCRIPTION, Status.DONE);
+        ItemUpdate update = new ItemUpdate(DESCRIPTION, true);
         when(this.itemMapper.map(updateDto)).thenReturn(update);
         when(this.itemService.update(ID, update)).thenReturn(Optional.empty());
 

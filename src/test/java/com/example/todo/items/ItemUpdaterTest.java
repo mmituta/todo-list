@@ -3,7 +3,6 @@ package com.example.todo.items;
 import com.example.todo.CurrentDateTimeProvider;
 import com.example.todo.items.model.Item;
 import com.example.todo.items.model.ItemUpdate;
-import com.example.todo.items.model.Status;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +30,7 @@ class ItemUpdaterTest {
 
     @BeforeEach
     void setUpItem() {
-        item = new Item(ANY_UUID, "old", OffsetDateTime.MAX, OffsetDateTime.MIN, null, Status.NOT_DONE);
+        item = new Item(ANY_UUID, "old", OffsetDateTime.MAX, OffsetDateTime.MIN, null, false);
     }
 
     @Test
@@ -53,9 +52,9 @@ class ItemUpdaterTest {
     void shouldUpdateStatusIfStatusIsNotNull() {
         when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
 
-        Item result = itemUpdater.updateItem(new ItemUpdate(null, Status.DONE), item);
+        Item result = itemUpdater.updateItem(new ItemUpdate(null, true), item);
 
-        assertThat(result.getStatus()).isEqualTo(Status.DONE);
+        assertThat(result.isDone()).isTrue();
         assertThat(result.getFinished()).isEqualTo(CURRENT_TIME);
     }
 
@@ -63,24 +62,24 @@ class ItemUpdaterTest {
     void shouldNotUpdateStatusIfStatusIsNull() {
         Item result = itemUpdater.updateItem(new ItemUpdate(null, null), item);
 
-        assertThat(result.getStatus()).isEqualTo(item.getStatus());
+        assertThat(result.isDone()).isEqualTo(item.isDone());
     }
 
     @Test
     void shouldUpdateDescriptionAndStatusAtTheSameTime() {
         when(this.currentDateTimeProvider.now()).thenReturn(CURRENT_TIME);
-        Item result = itemUpdater.updateItem(new ItemUpdate("test", Status.DONE), item);
+        Item result = itemUpdater.updateItem(new ItemUpdate("test", true), item);
 
-        assertThat(result.getStatus()).isEqualTo(Status.DONE);
+        assertThat(result.isDone()).isTrue();
         assertThat(result.getDescription()).isEqualTo("test");
         assertThat(result.getFinished()).isEqualTo(CURRENT_TIME);
     }
 
     @Test
     void shouldClearFinishedTimeWhenTheItemIsMarkedAsNotDone() {
-        Item doneItem = new Item(ANY_UUID, "old", OffsetDateTime.MAX, OffsetDateTime.MIN, CURRENT_TIME, Status.DONE);
+        Item doneItem = new Item(ANY_UUID, "old", OffsetDateTime.MAX, OffsetDateTime.MIN, CURRENT_TIME, true);
 
-        Item result = itemUpdater.updateItem(new ItemUpdate(null, Status.NOT_DONE), doneItem);
+        Item result = itemUpdater.updateItem(new ItemUpdate(null, false), doneItem);
         assertThat(result.getFinished()).isNull();
     }
 

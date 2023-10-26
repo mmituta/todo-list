@@ -6,7 +6,6 @@ import com.example.todo.items.ItemService;
 import com.example.todo.items.controller.dto.*;
 import com.example.todo.items.model.Item;
 
-import com.example.todo.items.model.Status;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -72,7 +71,7 @@ public class ItemController {
             return this.itemService.findPastDueItems();
         }
 
-        return this.itemService.findWithStatus(status == StatusDto.DONE ? Status.DONE : Status.NOT_DONE);
+        return this.itemService.findWithStatus(status == StatusDto.DONE);
     }
 
     @Operation(summary = "Gets the details of the specified item",

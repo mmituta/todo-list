@@ -4,7 +4,6 @@ import com.example.todo.CurrentDateTimeProvider;
 import com.example.todo.items.model.Item;
 import com.example.todo.items.model.ItemUpdate;
 import com.example.todo.items.repository.ItemRepository;
-import com.example.todo.items.model.Status;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -34,10 +33,10 @@ class ItemServiceTest {
 
     @Test
     void shouldThrowExceptionWhenUpdatingItemThatIsPastDue() {
-        Item item = new Item(ANY_UUID, "old", FUTURE_DATE, CURRENT_TIME, null, Status.DONE);
+        Item item = new Item(ANY_UUID, "old", FUTURE_DATE, CURRENT_TIME, null, true);
         when(this.repository.findById(ANY_UUID)).thenReturn(Optional.of(item));
         when(this.currentDateTimeProvider.now()).thenReturn(FUTURE_DATE.plusDays(1));
 
-        assertThrows(PastDueItemModificationException.class, () -> this.service.update(ANY_UUID, new ItemUpdate("description", Status.DONE)));
+        assertThrows(PastDueItemModificationException.class, () -> this.service.update(ANY_UUID, new ItemUpdate("description", true)));
     }
 }
