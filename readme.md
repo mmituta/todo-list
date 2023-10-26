@@ -39,8 +39,7 @@ An example that starts the container named "todo" that listens on the port 8081:
 `docker run --name todo -p 8081:8080 -d mmituta/todo-list:v1`
 
 
-
-### Running the service locally
+### Building and running the service locally
 
 ### Building the project
 The project is managed by maven. To build it you can run the `mvn install` command.
@@ -51,8 +50,14 @@ The project provides a set of unit tests that can be run using `mvn test` comman
 
 ### Starting the service
 
-After building the service locally, you can use the `mvn spring-boot:run` command to start it. The service is configured to listen on the 8080 port by default.
+After building the service locally, you can use the `mvn spring-boot:run` command to start it. The service is configured to listen on the `8080` port by default.
 
+### Building the docker image
+
+To build and deploy the docker image use the `mvn compile jib:build -Dimage=<<TARGET_IMAGE>>` where `<<TARGET_IMAGE>>` is the reference for the target image.
+
+For example:
+`mvn compile jib:build -Dimage=mmituta/todo-list:v1`
 ## Using the service
 
 The service provides a page that documents the API, it contains a description of all the endpoints and their responses.
