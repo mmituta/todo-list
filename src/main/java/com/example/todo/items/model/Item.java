@@ -27,6 +27,7 @@ public class Item {
     @NotNull
     private OffsetDateTime dueDateTime;
 
+    @NotNull
     private OffsetDateTime created;
 
     private OffsetDateTime finished;
