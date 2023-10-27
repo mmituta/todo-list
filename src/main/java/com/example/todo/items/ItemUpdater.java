@@ -12,7 +12,7 @@ import java.time.OffsetDateTime;
  * This classes uses Mapstruct code generation to implement a partial update operation.
  * Making use of the mechanisms provided by Mapstruct it sets only the non-null values into the provided {@link Item}.
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public abstract class ItemUpdater {
     @Autowired
     protected CurrentDateTimeProvider currentDateTimeProvider;
