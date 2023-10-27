@@ -92,7 +92,8 @@ public class ItemController {
                     @ApiResponse(responseCode = "200", description = "Details of the updated item",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ItemDetailsDto.class))),
                     @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
-                    @ApiResponse(responseCode = "404", description = "No item found", content = @Content)})
+                    @ApiResponse(responseCode = "404", description = "No item found", content = @Content),
+                    @ApiResponse(responseCode = "422", description = "Item is past due and can not be updated", content = @Content)})
     @PatchMapping("/{id}")
     public ResponseEntity<ItemDetailsDto> updateItem(@PathVariable UUID id, @Valid @RequestBody final ItemUpdateDto item) throws PastDueItemModificationException {
         Optional<Item> itemEntity = this.itemService.update(id, this.itemMapper.map(item));

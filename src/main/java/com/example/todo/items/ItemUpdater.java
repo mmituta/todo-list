@@ -8,6 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.OffsetDateTime;
 
+/**
+ * This classes uses Mapstruct code generation to implement a partial update operation.
+ * Making use of the mechanisms provided by Mapstruct it sets only the non-null values into the provided {@link Item}.
+ */
 @Mapper(componentModel = "spring")
 public abstract class ItemUpdater {
     @Autowired

@@ -2,6 +2,23 @@
 
 This project implements a service that allows for basic management of TODO list
 
+## Made assumptions
+
+The requirement was that the service should automatically change the status of the items to "PAST_DUE" if the due date
+time has passed.
+My first instinct was to use a scheduler that would cyclically check all items and mark the ones that are past due.
+In the end decided against it because:
+
++ To determine if the item is past due or not we can use the past due date property and compare it with the current
+  time. Changing the status property of the item would be redundant.
++ Checking all the items would introduce a performance weak point. The time it would take to check the items would grow
+  with the number of items
++ Scaling the service would be more complicated as the scheduler would need to run only on one node. It would require
+  using a distributed lock or dividing the items between the nodes in some way.
+
+It would make sense to introduce such scheduler if there would be a requirement to react on the event of the item being
+past due. E.g. sending out events to other services, notifying users etc.
+
 ## Used libraries and tools
 
 + [REST-assured](https://rest-assured.io/) library has been used for writing e2e tests, it provides a concise interface
@@ -18,6 +35,10 @@ This project implements a service that allows for basic management of TODO list
 
 Here's the list of things missing from the service that should be in place in a production-ready code.
 
++ I would add logging. A request filter could be enabled that allows for logging requests. There's not much to log in
+  the application itself, maybe I'd add a DEBUG or TRACE entries to indicate that the item was mark DONE/NOT_DONE or
+  that the update was prevented because of an item being past due.
++ Some kind of healthcheck endpoint. To allow checking the status of the service.
 + Better validation of the input data. For example, at the moment it's possible to create an item with past due date in
   the past. It's left out to make testing the behavior of the service easier but in the production code it would not
   make sense.
@@ -31,10 +52,12 @@ Here's the list of things missing from the service that should be in place in a 
 + A service level model, separate from the JPA model could be introduced in the future. Currently, the entity is being
   used on the data access and on the service layer, which is fine for such simple case. But in more complex application
   it can lead to the service design being affected by the limitation's of the entities.
-+ Method-level pre-conditon checks should be added. For example right now there's a validation on the controller level
++ Method-level precondition checks should be added. For example right now there's a validation on the controller level
   that doesn't accept blank strings when updating the item's description. I use this fact on the service level, without
   implicitly checking if the value is blank. If the service would be used in another context this could lead to
   inconsistent behavior
++ I'd consider adding more JavaDocs. Right now only the 'interesting' parts of the application are documented. The rest
+  of the classes and methods is relatively simple and can be understood without the comments, so I didn't add them.
 
 ## Running the service
 
