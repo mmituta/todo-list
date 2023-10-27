@@ -71,7 +71,7 @@ public class ItemController {
             return this.itemService.findPastDueItems();
         }
 
-        return this.itemService.findWithStatus(status == StatusDto.DONE);
+        return this.itemService.findWithCompletionStatus(status == StatusDto.DONE);
     }
 
     @Operation(summary = "Gets the details of the specified item",

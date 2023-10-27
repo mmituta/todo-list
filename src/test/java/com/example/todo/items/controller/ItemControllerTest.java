@@ -61,7 +61,7 @@ class ItemControllerTest {
 
         ItemDetailsDto doneDto = ItemDetailsDto.builder().status(StatusDto.DONE).build();
         when(this.itemMapper.map(doneItem)).thenReturn(doneDto);
-        when(this.itemService.findWithStatus(true)).thenReturn(singleton(doneItem));
+        when(this.itemService.findWithCompletionStatus(true)).thenReturn(singleton(doneItem));
 
         ResponseEntity<Collection<ItemDetailsDto>> result = this.itemController.getAllItems(StatusDto.DONE);
 

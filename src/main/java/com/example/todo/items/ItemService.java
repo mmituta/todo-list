@@ -53,7 +53,7 @@ public class ItemService {
         return this.itemRepository.findById(id);
     }
 
-    public Iterable<Item> findWithStatus(boolean isDone) {
+    public Iterable<Item> findWithCompletionStatus(boolean isDone) {
         return this.itemRepository.findAllByDoneAndDueDateTimeAfter(isDone, this.currentDateTimeProvider.now());
     }
 
