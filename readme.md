@@ -2,12 +2,270 @@
 
 This project implements a service that allows for basic management of TODO list
 
+## Running the service
+
+To start the service you can download and run the docker image, or you can build the service yourself and run it
+locally.
+
+### Running the service using Docker
+
+You can pull the docker image from the repository with the following command:
+`docker pull mmituta/todo-list:v1`
+
+and then to run it, you can use:
+`docker run --name <<container-name>> -p <<port-number>>:8080 -d mmituta/todo-list:v1 `
+where:
+
++ `<<container-name>>` is the name with which you want to create container from the image
++ `<<port-number>>` is the port on which the service should listen.
+
+An example that starts the container named "todo" that listens on the port 8080:
+
+`docker run --name todo -p 8080:8080 -d mmituta/todo-list:v1`
+
+## Building and running the service locally
+
+### Building the project
+
+The project is managed by maven. It uses Java 21. To build it you can run the `mvn install` command.
+
+#### Running the tests
+
+The project provides a set of unit tests that can be run using `mvn test` command and integration tests that can be run
+using `mvn failsafe:integration-test`
+
+### Starting the service
+
+After building the service locally, you can use the `mvn spring-boot:run` command to start it. The service is configured
+to listen on the `8080` port by default.
+
+### Building the docker image
+
+To build and deploy the docker image use the `mvn compile jib:build -Dimage=<<TARGET_IMAGE>>` where `<<TARGET_IMAGE>>`
+is the reference for the target image.
+
+For example:
+`mvn compile jib:build -Dimage=mmituta/todo-list:v1`
+
+## Using the service
+
+The service provides a page that documents the API, it contains a description of all the endpoints and their responses.
+It also provides an environment to try out the service, available under:`<<base-url>>/swagger-ui/index.html`
+
+So assuming that the service is run on localhost with the default `8080` port:
+
+http://localhost:8080/swagger-ui/index.html
+
+### Examples
+
+This sections presents how some common use cases could be realized using the service's endpoints.
+
+<details>
+<summary><b>Add a new item</b></summary>
+
+##### Endpoint:
+
+`Method: POST; PATH: <<base-url>>/items` Example: http://localhost:8080/items
+
+##### Request body:
+
+```
+{
+    "description" : "second item",
+    "dueDateTime" :  "2024-10-28T15:35:30Z"
+}
+```
+
+#### Response body:
+
+```
+{
+    "id": "492e9ca0-1dc3-4b6a-a64a-324657570d10",
+    "description": "second item",
+    "dueDateTime": "2023-10-28T15:35:30Z",
+    "created": "2023-10-26T18:03:28.4134419+02:00",
+    "status": "NOT_DONE"
+}
+```
+</details>
+
+<details>
+<summary><b>Change the description of an item</b></summary>
+
+##### Endpoint
+
+`Method: PATCH; PATH: <<base-url>>/items/{id}` Example: http://localhost:8080/items/492e9ca0-1dc3-4b6a-a64a-324657570d10
+
+##### Request body:
+
+```
+{
+    "description": "important item"
+}
+```
+
+##### Response body:
+
+```
+{
+    "id": "492e9ca0-1dc3-4b6a-a64a-324657570d10",
+    "description": "important item",
+    "dueDateTime": "2023-10-28T15:35:30Z",
+    "created": "2023-10-26T18:03:28.413442+02:00",
+    "status": "NOT_DONE"
+}
+```
+</details>
+
+<details>
+<summary><b>Mark an item as "done"</b></summary>
+
+##### Endpoint
+
+`Method: PATCH; PATH: <<base-url>>/items/{id}` Example: http://localhost:8080/items/492e9ca0-1dc3-4b6a-a64a-324657570d10
+
+##### Request body:
+
+```
+{
+    "status": "DONE"
+}
+```
+
+##### Response body:
+
+```
+{
+    "id": "492e9ca0-1dc3-4b6a-a64a-324657570d10",
+    "description": "important item",
+    "dueDateTime": "2023-10-28T15:35:30Z",
+    "created": "2023-10-26T18:03:28.413442+02:00",
+    "finished": "2023-10-26T18:06:06.2633207+02:00",
+    "status": "DONE"
+}
+```
+
+</details>
+
+<details>
+<summary><b>Mark an item as "not done"</b></summary>
+
+##### Endpoint:
+
+`Method: PATCH; PATH: <<base-url>>/items/{id}` Example: http://localhost:8080/items/492e9ca0-1dc3-4b6a-a64a-324657570d10
+
+##### Request body:
+
+```
+{
+    "status": "NOT_DONE"
+}
+```
+
+##### Response body
+
+```
+{
+    "id": "492e9ca0-1dc3-4b6a-a64a-324657570d10",
+    "description": "important item",
+    "dueDateTime": "2023-10-28T15:35:30Z",
+    "created": "2023-10-26T18:03:28.413442+02:00",
+    "status": "NOT_DONE"
+}
+```
+
+</details>
+
+<details>
+<summary><b>Get all items that are "not done"</b></summary>
+
+##### Endpoint
+
+`Method: GET; PATH: <<base-url>>/items?status=?` Example: http://localhost:8080/items?status=NOT_DONE
+
+##### Response body:
+
+```
+[
+    {
+        "id": "492e9ca0-1dc3-4b6a-a64a-324657570d10",
+        "description": "important item",
+        "dueDateTime": "2023-10-28T15:35:30Z",
+        "created": "2023-10-26T18:03:28.413442+02:00",
+        "status": "NOT_DONE"
+    },
+    {
+        "id": "ed5ca7cc-3d92-43a2-8686-de9c76211104",
+        "description": "first item",
+        "dueDateTime": "2024-01-28T15:35:30Z",
+        "created": "2023-10-26T18:08:11.994788+02:00",
+        "status": "NOT_DONE"
+    }
+]
+```
+</details>
+
+<details>
+<summary><b>Get all items</b></summary>
+
+##### Endpoint
+
+`Method: GET; PATH: <<base-url>>/items` Example: http://localhost:8080/items
+
+##### Response body:
+
+```
+[
+	{
+		"id": "492e9ca0-1dc3-4b6a-a64a-324657570d10",
+		"description": "important item",
+		"dueDateTime": "2023-10-28T15:35:30Z",
+		"created": "2023-10-26T18:03:28.413442+02:00",
+		"status": "NOT_DONE"
+	},
+	{
+		"id": "45dbb6b8-0da7-489c-882a-5f65898d977b",
+		"description": "first item",
+		"dueDateTime": "2023-01-28T15:35:30Z",
+		"created": "2023-10-26T18:08:07.486186+02:00",
+		"status": "PAST_DUE"
+	},
+	{
+		"id": "ed5ca7cc-3d92-43a2-8686-de9c76211104",
+		"description": "first item",
+		"dueDateTime": "2024-01-28T15:35:30Z",
+		"created": "2023-10-26T18:08:11.994788+02:00",
+		"status": "NOT_DONE"
+	}
+]
+```
+</details>
+<details>
+<summary><b>Get details of a specific item</b></summary>
+
+##### Endpoint
+
+`Method: GET; PATH: <<base-url>>/items` Example: http://localhost:8080/items/492e9ca0-1dc3-4b6a-a64a-324657570d10
+
+##### Response Body:
+
+```
+{
+    "id": "492e9ca0-1dc3-4b6a-a64a-324657570d10",
+    "description": "important item",
+    "dueDateTime": "2023-10-28T15:35:30Z",
+    "created": "2023-10-26T18:03:28.413442+02:00",
+    "status": "NOT_DONE"
+}
+```
+</details>
+
 ## Made assumptions
 
 The requirement was that the service should automatically change the status of the items to "PAST_DUE" if the due date
 time has passed.
 My first instinct was to use a scheduler that would cyclically check all items and mark the ones that are past due.
-In the end decided against it because:
+In the end I had decided against it because:
 
 + To determine if the item is past due or not we can use the past due date property and compare it with the current
   time. Changing the status property of the item would be redundant.
@@ -58,245 +316,3 @@ Here's the list of things missing from the service that should be in place in a 
   inconsistent behavior
 + I'd consider adding more JavaDocs. Right now only the 'interesting' parts of the application are documented. The rest
   of the classes and methods is relatively simple and can be understood without the comments, so I didn't add them.
-
-## Running the service
-
-To start the service you can download and run the docker image, or you can build the service yourself and run it
-locally.
-
-### Running the service using Docker
-
-You can pull the docker image from the repository with the following command:
-`docker pull mmituta/todo-list:v1`
-
-and then you to run it, you can use:
-`docker run --name <<container-name>> -p <<port-number>>:8080 -d mmituta/todo-list:v1 `
-where:
-
-+ `<<container-name>>` is the name with which you want to create container from the image
-+ `<<port-number>>` is the port on which the service should listen.
-
-An example that starts the container named "todo" that listens on the port 8081:
-`docker run --name todo -p 8081:8080 -d mmituta/todo-list:v1`
-
-### Building and running the service locally
-
-### Building the project
-
-The project is managed by maven. To build it you can run the `mvn install` command.
-
-#### Running the tests
-
-The project provides a set of unit tests that can be run using `mvn test` command and integration tests that can be run
-using `mvn failsafe:integration-test`
-
-### Starting the service
-
-After building the service locally, you can use the `mvn spring-boot:run` command to start it. The service is configured
-to listen on the `8080` port by default.
-
-### Building the docker image
-
-To build and deploy the docker image use the `mvn compile jib:build -Dimage=<<TARGET_IMAGE>>` where `<<TARGET_IMAGE>>`
-is the reference for the target image.
-
-For example:
-`mvn compile jib:build -Dimage=mmituta/todo-list:v1`
-
-## Using the service
-
-The service provides a page that documents the API, it contains a description of all the endpoints and their responses.
-It also provides an environment to try out the service, available under:`<<base-url>>/swagger-ui/index.html`
-
-So assuming that the service is run on localhost with the default `8080` port:
-
-http://localhost:8080/swagger-ui/index.html
-
-### Examples
-
-This sections presents how some common use cases could be realized using the service's endpoints.
-
-#### Add a new item
-
-##### Endpoint:
-
-`Method: POST; PATH: <<base-url>>/items` Example: http://localhost:8080/items
-
-##### Request body:
-
-```
-{
-    "description" : "second item",
-    "dueDateTime" :  "2024-10-28T15:35:30Z"
-}
-```
-
-#### Response body:
-
-```
-{
-    "id": "492e9ca0-1dc3-4b6a-a64a-324657570d10",
-    "description": "second item",
-    "dueDateTime": "2023-10-28T15:35:30Z",
-    "created": "2023-10-26T18:03:28.4134419+02:00",
-    "status": "NOT_DONE"
-}
-```
-
-#### Change the description of an item
-
-##### Endpoint
-
-`Method: PATCH; PATH: <<base-url>>/items/{id}` Example: http://localhost:8080/items/492e9ca0-1dc3-4b6a-a64a-324657570d10
-
-##### Request body:
-
-```
-{
-    "description": "important item"
-}
-```
-
-##### Response body:
-
-```
-{
-    "id": "492e9ca0-1dc3-4b6a-a64a-324657570d10",
-    "description": "important item",
-    "dueDateTime": "2023-10-28T15:35:30Z",
-    "created": "2023-10-26T18:03:28.413442+02:00",
-    "status": "NOT_DONE"
-}
-```
-
-#### Mark an item as "done"
-
-##### Endpoint
-
-`Method: PATCH; PATH: <<base-url>>/items/{id}` Example: http://localhost:8080/items/492e9ca0-1dc3-4b6a-a64a-324657570d10
-
-##### Request body:
-
-```
-{
-    "status": "DONE"
-}
-```
-
-##### Response body:
-
-```
-{
-    "id": "492e9ca0-1dc3-4b6a-a64a-324657570d10",
-    "description": "important item",
-    "dueDateTime": "2023-10-28T15:35:30Z",
-    "created": "2023-10-26T18:03:28.413442+02:00",
-    "finished": "2023-10-26T18:06:06.2633207+02:00",
-    "status": "DONE"
-}
-```
-
-#### Mark an item as "not done"
-
-##### Endpoint:
-
-`Method: PATCH; PATH: <<base-url>>/items/{id}` Example: http://localhost:8080/items/492e9ca0-1dc3-4b6a-a64a-324657570d10
-
-##### Request body:
-
-```
-{
-    "status": "NOT_DONE"
-}
-```
-
-##### Response body
-
-```
-{
-    "id": "492e9ca0-1dc3-4b6a-a64a-324657570d10",
-    "description": "important item",
-    "dueDateTime": "2023-10-28T15:35:30Z",
-    "created": "2023-10-26T18:03:28.413442+02:00",
-    "status": "NOT_DONE"
-}
-```
-
-#### Get all items that are "not done"
-
-##### Endpoint
-
-`Method: GET; PATH: <<base-url>>/items?status=?` Example: http://localhost:8080/items?status=NOT_DONE
-
-##### Response body:
-
-```
-[
-    {
-        "id": "492e9ca0-1dc3-4b6a-a64a-324657570d10",
-        "description": "important item",
-        "dueDateTime": "2023-10-28T15:35:30Z",
-        "created": "2023-10-26T18:03:28.413442+02:00",
-        "status": "NOT_DONE"
-    },
-    {
-        "id": "ed5ca7cc-3d92-43a2-8686-de9c76211104",
-        "description": "first item",
-        "dueDateTime": "2024-01-28T15:35:30Z",
-        "created": "2023-10-26T18:08:11.994788+02:00",
-        "status": "NOT_DONE"
-    }
-]
-```
-
-#### Get all items
-
-##### Endpoint
-
-`Method: GET; PATH: <<base-url>>/items` Example: http://localhost:8080/items
-
-##### Response body:
-
-```
-[
-	{
-		"id": "492e9ca0-1dc3-4b6a-a64a-324657570d10",
-		"description": "important item",
-		"dueDateTime": "2023-10-28T15:35:30Z",
-		"created": "2023-10-26T18:03:28.413442+02:00",
-		"status": "NOT_DONE"
-	},
-	{
-		"id": "45dbb6b8-0da7-489c-882a-5f65898d977b",
-		"description": "first item",
-		"dueDateTime": "2023-01-28T15:35:30Z",
-		"created": "2023-10-26T18:08:07.486186+02:00",
-		"status": "PAST_DUE"
-	},
-	{
-		"id": "ed5ca7cc-3d92-43a2-8686-de9c76211104",
-		"description": "first item",
-		"dueDateTime": "2024-01-28T15:35:30Z",
-		"created": "2023-10-26T18:08:11.994788+02:00",
-		"status": "NOT_DONE"
-	}
-]
-```
-
-#### Get details of a specific item.
-
-##### Endpoint
-
-`Method: GET; PATH: <<base-url>>/items` Example: http://localhost:8080/items/492e9ca0-1dc3-4b6a-a64a-324657570d10
-
-##### Response Body:
-
-```
-{
-    "id": "492e9ca0-1dc3-4b6a-a64a-324657570d10",
-    "description": "important item",
-    "dueDateTime": "2023-10-28T15:35:30Z",
-    "created": "2023-10-26T18:03:28.413442+02:00",
-    "status": "NOT_DONE"
-}
-```
